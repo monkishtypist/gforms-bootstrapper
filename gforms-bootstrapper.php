@@ -212,7 +212,11 @@ if (class_exists("GFForms")) {
             $form_string = str_replace( '</ul>', '</div>', $form_string );
             $form_string = str_replace( '<li ', '<div ', $form_string );
             $form_string = str_replace( '</li>', '</div>', $form_string );
+            // set footer as form group
             $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align , $form_string );
+            // set body as form group, fix for inline forms
+            if ( $settings['formlayout'] == 'inline' )
+                $form_string = str_replace( 'gform_body', 'gform_body form-group', $form_string );
             return $form_string;
         }
 
