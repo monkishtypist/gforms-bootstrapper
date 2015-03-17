@@ -167,7 +167,7 @@ if (class_exists("GFForms")) {
                 case 'horizontal':
                     $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
                     $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
-                    $content = str_replace('gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content);
+                    $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
                     $content = str_replace( 'small', 'small form-control', $content );
                     $content = str_replace( 'medium', 'medium form-control', $content );
                     $content = str_replace( 'large', 'large form-control', $content );
