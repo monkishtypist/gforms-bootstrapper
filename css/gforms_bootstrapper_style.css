@@ -1,0 +1,9 @@
+/**
+ * Bootstrapper CSS for front end
+ *
+ */
+
+/* Style ajax spinner */
+.gform_ajax_spinner {
+	max-width: 16px;
+}

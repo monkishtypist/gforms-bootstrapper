@@ -75,6 +75,7 @@ if (class_exists("GFForms")) {
         public function init_frontend(){
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
+            add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
         }
 
         public function init_ajax(){
@@ -118,6 +119,8 @@ if (class_exists("GFForms")) {
                     $classes .= 'btn-sm';
             }
             $button = str_replace( 'gform_button', $classes, $button );
+            $button = str_replace( '>', 'data-loading-text="Processing..." >', $button );
+            
             if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
                 $button = '<div class="col-md-offset-'.$col_l.' col-md-'.$col_r.'">' . $button . '</div>';
             }
@@ -321,6 +324,25 @@ if (class_exists("GFForms")) {
                 )
             );
         }
+
+        /**
+         *  Plugin Styles
+         *
+         *  Call styles that we may want apply on form pages
+         *
+         **/
+        public function bootstrapper_styles() {
+
+            $style = array(
+                "handle"  => "gforms_bootstrapper_style",
+                "src"     => $this->get_base_url() . "/css/gforms_bootstrapper_style.css",
+                "version" => $this->_version,
+            );
+
+            wp_enqueue_style( $style['handle'], $style['src'] );
+
+        }
+
     }
 
     // Instantiate the class - this triggers everything, makes the magic happen
