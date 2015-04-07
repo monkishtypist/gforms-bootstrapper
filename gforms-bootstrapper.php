@@ -167,6 +167,11 @@ if (class_exists("GFForms")) {
             }
 
             switch ($settings['formlayout']) {
+                case 'basic':
+                    $content = str_replace( 'gform_body', 'gform-body row', $content );
+                    $content = str_replace( 'gfield ', 'gfield col-xs-12 ', $content );
+                    $content = str_replace( 'gf_left_half', 'gf_left_half col-md-6 pull-left', $content );
+                    $content = str_replace( 'gf_right_half', 'gf_right_half col-md-6 pull-right', $content );
                 case 'horizontal':
                     $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
                     $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
@@ -256,7 +261,7 @@ if (class_exists("GFForms")) {
                             "label"   => "Horizontal Column Width",
                             "type"    => "select",
                             "name"    => "colwidth",
-                            "tooltip" => "Sets width of label (left) and field (right) columns as a ratio",
+                            "tooltip" => "Sets width of label (left) and field (right) columns as a ratio. Only applies to horizontal form layout.",
                             "choices" => array(
                                 array(
                                     "label" => "2 - 10",
