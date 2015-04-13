@@ -136,7 +136,7 @@ if (class_exists("GFForms")) {
             $has_error = ( $field['failed_validation'] == 1 ? 'has-error' : '' );
             $size = ( isset($settings['btnsize']) ? $settings['btnsize'] : '' );
             $classes .= " form-group " . $has_error;
-            if ( $settings['formlayout'] == 'horizontal' ) {
+            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
                 if ( $size == 'large' )
                     $classes .= " form-group-lg";
                  if ( $size == 'small' )
@@ -166,28 +166,30 @@ if (class_exists("GFForms")) {
                 //$content = str_replace('gfield_checkbox', 'gfield_checkbox checkbox', $content);
             }
 
-            switch ($settings['formlayout']) {
-                case 'basic':
-                    $content = str_replace( 'gform_body', 'gform-body row', $content );
-                    $content = str_replace( 'gfield ', 'gfield col-xs-12 ', $content );
-                    $content = str_replace( 'gf_left_half', 'gf_left_half col-md-6 pull-left', $content );
-                    $content = str_replace( 'gf_right_half', 'gf_right_half col-md-6 pull-right', $content );
-                case 'horizontal':
-                    $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
-                    $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
-                    $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
-                    $content = str_replace( 'small', 'small form-control', $content );
-                    $content = str_replace( 'medium', 'medium form-control', $content );
-                    $content = str_replace( 'large', 'large form-control', $content );
-                    break;
-                case 'inline':
-                default:
-                    $content = str_replace( '<div ', '<span ', $content );
-                    $content = str_replace( '</div>', '</span>', $content );
-                    $content = str_replace( 'small', 'small form-control input-sm', $content );
-                    $content = str_replace( 'medium', 'medium form-control', $content );
-                    $content = str_replace( 'large', 'large form-control input-lg', $content );
-                    break;
+            if ( isset( $settings['formlayout'] ) ) {
+                switch ($settings['formlayout']) {
+                    case 'basic':
+                        $content = str_replace( 'gform_body', 'gform-body row', $content );
+                        $content = str_replace( 'gfield ', 'gfield col-xs-12 ', $content );
+                        $content = str_replace( 'gf_left_half', 'gf_left_half col-md-6 pull-left', $content );
+                        $content = str_replace( 'gf_right_half', 'gf_right_half col-md-6 pull-right', $content );
+                    case 'horizontal':
+                        $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
+                        $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
+                        $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
+                        $content = str_replace( 'small', 'small form-control', $content );
+                        $content = str_replace( 'medium', 'medium form-control', $content );
+                        $content = str_replace( 'large', 'large form-control', $content );
+                        break;
+                    case 'inline':
+                    default:
+                        $content = str_replace( '<div ', '<span ', $content );
+                        $content = str_replace( '</div>', '</span>', $content );
+                        $content = str_replace( 'small', 'small form-control input-sm', $content );
+                        $content = str_replace( 'medium', 'medium form-control', $content );
+                        $content = str_replace( 'large', 'large form-control input-lg', $content );
+                        break;
+                }
             }
             return $content;
         }
