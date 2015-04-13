@@ -89,16 +89,18 @@ if (class_exists("GFForms")) {
          */
         public function bootstrap_form_tag($form_tag, $form){
             $settings = $this->get_form_settings($form);
-            switch ($settings['formlayout']) {
-                case 'inline':
-                    $form_tag = str_replace( '<form ', '<form class="form-inline" ', $form_tag );
-                    break;
-                case 'horizontal':
-                    $form_tag = str_replace( '<form ', '<form class="form-horizontal"', $form_tag );
-                    break;
-                default:
-                    // Basic form...
-                    break;
+            if ( isset($settings['formlayout']) ) {
+                switch ($settings['formlayout']) {
+                    case 'inline':
+                        $form_tag = str_replace( '<form ', '<form class="form-inline" ', $form_tag );
+                        break;
+                    case 'horizontal':
+                        $form_tag = str_replace( '<form ', '<form class="form-horizontal"', $form_tag );
+                        break;
+                    default:
+                        // Basic form...
+                        break;
+                }
             }
             return $form_tag;
         }
@@ -225,7 +227,7 @@ if (class_exists("GFForms")) {
             // set footer as form group
             $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align , $form_string );
             // set body as form group, fix for inline forms
-            if ( $settings['formlayout'] == 'inline' )
+            if ( isset($settings['formlayout']) && $settings['formlayout'] == 'inline' )
                 $form_string = str_replace( 'gform_body', 'gform_body form-group', $form_string );
             return $form_string;
         }
@@ -243,7 +245,7 @@ if (class_exists("GFForms")) {
                             "label"   => "Form layout",
                             "type"    => "select",
                             "name"    => "formlayout",
-                            //"tooltip" => "This is the tooltip",
+                            "default_value" => "basic",
                             "choices" => array(
                                 array(
                                     "label" => "Basic form",
@@ -257,13 +259,14 @@ if (class_exists("GFForms")) {
                                     "label" => "Horizontal form",
                                     "value" => "horizontal"
                                 )
-                            )
+                            ),
                         ),
                         array(
-                            "label"   => "Horizontal Column Width",
+                            "label"   => "Horizontal Column Widths",
                             "type"    => "select",
                             "name"    => "colwidth",
                             "tooltip" => "Sets width of label (left) and field (right) columns as a ratio. Only applies to horizontal form layout.",
+                            'dependency' => array( 'field' => 'formlayout', 'values' => array( 'horizontal' ) ),
                             "choices" => array(
                                 array(
                                     "label" => "2 - 10",
