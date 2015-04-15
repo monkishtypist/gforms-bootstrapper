@@ -9,7 +9,7 @@
 }
 /* validation/honeypot fix */
 .gform_validation_container {
-  position: absolute;
-  left: -99999px;
-  top: -99999px;
+  position: absolute !important;
+  left: -99999px !important;
+  top: -99999px !important;
 }
