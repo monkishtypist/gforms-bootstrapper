@@ -89,18 +89,14 @@ if (class_exists("GFForms")) {
          */
         public function bootstrap_form_tag($form_tag, $form){
             $settings = $this->get_form_settings($form);
-            if ( isset($settings['formlayout']) ) {
-                switch ($settings['formlayout']) {
-                    case 'inline':
-                        $form_tag = str_replace( '<form ', '<form class="form-inline" ', $form_tag );
-                        break;
-                    case 'horizontal':
-                        $form_tag = str_replace( '<form ', '<form class="form-horizontal"', $form_tag );
-                        break;
-                    default:
-                        // Basic form...
-                        break;
-                }
+            if ( ! isset($settings['formlayout']) || $settings['formlayout'] == 'basic' ) {
+                $form_tag = str_replace( '<form ', '<form class="form-basic form-bootstrapped" ', $form_tag );
+            }
+            else if ( $settings['formlayout'] == 'inline' ) {
+                $form_tag = str_replace( '<form ', '<form class="form-inline form-bootstrapped" ', $form_tag );
+            }
+            else if ( $settings['formlayout'] == 'horizontal' ) {
+                $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped"', $form_tag );
             }
             return $form_tag;
         }
@@ -141,7 +137,7 @@ if (class_exists("GFForms")) {
             if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
                 if ( $size == 'large' )
                     $classes .= " form-group-lg";
-                 if ( $size == 'small' )
+                if ( $size == 'small' )
                     $classes .= " form-group-sm";
             }
             return $classes;
@@ -168,31 +164,25 @@ if (class_exists("GFForms")) {
                 //$content = str_replace('gfield_checkbox', 'gfield_checkbox checkbox', $content);
             }
 
-            if ( isset( $settings['formlayout'] ) ) {
-                switch ($settings['formlayout']) {
-                    case 'basic':
-                        $content = str_replace( 'gform_body', 'gform-body row', $content );
-                        $content = str_replace( 'gfield ', 'gfield col-xs-12 ', $content );
-                        $content = str_replace( 'gf_left_half', 'gf_left_half col-md-6 pull-left', $content );
-                        $content = str_replace( 'gf_right_half', 'gf_right_half col-md-6 pull-right', $content );
-                    case 'horizontal':
-                        $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
-                        $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
-                        $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
-                        $content = str_replace( 'small', 'small form-control', $content );
-                        $content = str_replace( 'medium', 'medium form-control', $content );
-                        $content = str_replace( 'large', 'large form-control', $content );
-                        break;
-                    case 'inline':
-                    default:
-                        $content = str_replace( '<div ', '<span ', $content );
-                        $content = str_replace( '</div>', '</span>', $content );
-                        $content = str_replace( 'small', 'small form-control input-sm', $content );
-                        $content = str_replace( 'medium', 'medium form-control', $content );
-                        $content = str_replace( 'large', 'large form-control input-lg', $content );
-                        break;
-                }
+            if ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) {
+                $content = str_replace( '<div ', '<span ', $content );
+                $content = str_replace( '</div>', '</span>', $content );
             }
+            else if ( $settings['formlayout'] == 'inline' ) {
+                $content = str_replace( '<div ', '<span ', $content );
+                $content = str_replace( '</div>', '</span>', $content );
+            }
+            else if ( $settings['formlayout'] == 'horizontal' ) {
+                $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
+                $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
+                $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
+            }
+            else {
+            }
+            $content = str_replace( 'small', 'small form-control input-sm', $content );
+            $content = str_replace( 'medium', 'medium form-control', $content );
+            $content = str_replace( 'large', 'large form-control input-lg', $content );
+            
             return $content;
         }
 
@@ -202,7 +192,7 @@ if (class_exists("GFForms")) {
          */
         public function bootstrap_gravity_form_filter( $form_string, $form ) {
             $settings = $this->get_form_settings($form);
-            $btnalign = ( isset($settings['btnalign']) ? $settings['btnalign'] : 'default' );
+            $btnalign = ( isset( $settings['btnalign'] ) && ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) ) ? $settings['btnalign'] : 'default';
             $align = '';
             switch ($btnalign) {
                 case 'center':
@@ -226,9 +216,19 @@ if (class_exists("GFForms")) {
             $form_string = str_replace( '</li>', '</div>', $form_string );
             // set footer as form group
             $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align , $form_string );
+            
             // set body as form group, fix for inline forms
-            if ( isset($settings['formlayout']) && $settings['formlayout'] == 'inline' )
+            if ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) {
+                $form_string = str_replace( 'gform_body', 'gform-body row', $form_string );
+                $form_string = str_replace( 'gfield ', 'gfield col-xs-12 ', $form_string );
+            }
+            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'inline' ) {
                 $form_string = str_replace( 'gform_body', 'gform_body form-group', $form_string );
+            }
+
+            
+            $form_string = str_replace( 'gf_left_half', 'gf_left_half col-md-6 pull-left', $form_string );
+            $form_string = str_replace( 'gf_right_half', 'gf_right_half col-md-6 pull-right', $form_string );
             return $form_string;
         }
 
@@ -266,7 +266,7 @@ if (class_exists("GFForms")) {
                             "type"    => "select",
                             "name"    => "colwidth",
                             "tooltip" => "Sets width of label (left) and field (right) columns as a ratio. Only applies to horizontal form layout.",
-                            'dependency' => array( 'field' => 'formlayout', 'values' => array( 'horizontal' ) ),
+                            "dependency" => array( 'field' => 'formlayout', 'values' => array( 'horizontal' ) ),
                             "choices" => array(
                                 array(
                                     "label" => "2 - 10",
@@ -311,6 +311,7 @@ if (class_exists("GFForms")) {
                             "type"    => "select",
                             "name"    => "btnalign",
                             "tooltip" => "Adds Bootstrap alignment class to Gravity Form footer",
+                            "dependency" => array( 'field' => 'formlayout', 'values' => array( 'basic' ) ),
                             "choices" => array(
                                 array(
                                     "label" => "Default",
