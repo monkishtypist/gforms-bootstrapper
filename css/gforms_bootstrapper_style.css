@@ -58,3 +58,7 @@
 .gform_wrapper .form-horizontal.form-bootstrapped textarea.small {
 	width: 100%;
 }
+
+.gform_wrapper .datepicker + .input-group-addon {
+	min-width: 45px;
+}

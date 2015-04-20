@@ -60,10 +60,6 @@ if (class_exists("GFForms")) {
             parent::init();
             add_filter( 'gform_form_tag', array($this, 'bootstrap_form_tag'), 10, 2);
             add_filter( 'gform_submit_button', array($this, 'bootstrap_submit_button'), 10, 2 );
-            add_filter( 'gform_field_css_class', array($this, 'bootstrap_css_classes'), 10, 3);
-            add_filter( 'gform_field_content', array($this, 'bootstrap_field_content'), 10, 5 );
-            add_filter( 'gform_get_form_filter', array($this, 'bootstrap_gravity_form_filter'), 10, 2 );
-
             //add_filter("gform_field_content", array($this, "bootstrap_styles_for_gravityforms_fields"), 10, 5);
         }
 
@@ -76,6 +72,11 @@ if (class_exists("GFForms")) {
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
             add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
+            add_filter( 'gform_field_css_class', array($this, 'bootstrap_css_classes'), 10, 3);
+            add_filter( 'gform_field_content', array($this, 'bootstrap_field_content'), 10, 5 );
+            add_filter( 'gform_field_input' , array($this, 'bootstrap_field_input'), 10, 5 );
+            add_filter( 'gform_get_form_filter', array($this, 'bootstrap_gravity_form_filter'), 10, 2 );
+            add_filter( 'gform_tabindex', '__return_false' );
         }
 
         public function init_ajax(){
@@ -84,7 +85,9 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * Form Tag
+         * gform_form_tag
+         *
+         * This filter is executed when the form is displayed and can be used to completely change the form tag (i.e. <form method="post">).
          *
          */
         public function bootstrap_form_tag($form_tag, $form){
@@ -96,13 +99,15 @@ if (class_exists("GFForms")) {
                 $form_tag = str_replace( '<form ', '<form class="form-inline form-bootstrapped" ', $form_tag );
             }
             else if ( $settings['formlayout'] == 'horizontal' ) {
-                $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped"', $form_tag );
+                $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped" ', $form_tag );
             }
             return $form_tag;
         }
 
         /**
-         * Submit Button
+         * gform_submit_button
+         *
+         * This filter is executed when the form is displayed and can be used to completely change the form button tag (i.e. <input type="submit">).
          *
          */
         public function bootstrap_submit_button( $button, $form ) {
@@ -126,10 +131,15 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * CSS Classes
+         * gform_field_css_class
+         *
+         * This filter can be used to dynamically add/remove CSS classes to a field
          *
          */
         public function bootstrap_css_classes( $classes, $field, $form ){
+            if ( $field['type'] == "name" ) {
+                $classes .= " custom_name_class";
+            }
             $settings = $this->get_form_settings($form);
             $has_error = ( $field['failed_validation'] == 1 ? 'has-error' : '' );
             $size = ( isset($settings['btnsize']) ? $settings['btnsize'] : '' );
@@ -144,7 +154,20 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * Field Content
+         * gform_field_input
+         *
+         * This filter is executed before creating the field's input tag, allowing users to modify the field's input tag. It can also be used to create custom field types.
+         *
+         */
+        public function bootstrap_field_input( $input, $field, $value, $lead_id, $form_id ) {
+            // Rewrite any inputs here...
+            return $input;
+        }
+
+        /**
+         * gform_field_content
+         *
+         * This filter is executed before creating the field's content, allowing users to completely modify the way the field is rendered. It can also be used to create custom field types.
          *
          */
         public function bootstrap_field_content( $content, $field, $value, $lead_id, $form_id ) {
@@ -187,7 +210,8 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * Hook to filter gform_get_form_filter
+         * gform_get_form_filter
+         *
          * to clean up & inject some stuff..
          */
         public function bootstrap_gravity_form_filter( $form_string, $form ) {
