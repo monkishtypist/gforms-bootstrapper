@@ -160,7 +160,185 @@ if (class_exists("GFForms")) {
          *
          */
         public function bootstrap_field_input( $input, $field, $value, $lead_id, $form_id ) {
+            $form = GFAPI::get_form($form_id);
+            $settings = $this->get_form_settings($form);
+            $layout = 'basic';
+            if ( isset( $settings['formlayout'] ) )
+                $layout = $settings['formlayout'];
+            $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
             // Rewrite any inputs here...
+            switch ($field->type) {
+                case 'address':
+                    break;
+                case 'checkbox':
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<div class="checkbox" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">
+                                <label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">
+                                    <input 
+                                        name="input_' . $field->inputs[ $k ]['id'] . '" 
+                                        type="checkbox" 
+                                        value="' . $v['value'] . '" 
+                                        id="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" 
+                                        ' . ( ( ! empty( $value[ $field->inputs[ $k ]['id'] ] ) && $v['value'] == $value[ $field->inputs[ $k ]['id'] ] ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>
+                                    ' . $v['text'] . '
+                                </label>
+                            </div>';
+                    }
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'date':
+                    break;
+                case 'email':
+                    $input = '<input 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        type="email" 
+                        value="' . $value . '" 
+                        class="form-control ' . $field->size . '" 
+                        placeholder="' . $field->placeholder . '">';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'fileupload':
+                    // Complete for single file upload. Still needs work for multi-file uploads
+                    //print('<pre>'); print_r($field); print('</pre>');
+                    $max_upload = (int)(ini_get('upload_max_filesize'));
+                    $maxFileSize = $field->maxFileSize * 1024 * 1024;
+                    if ( $field->multipleFiles != 1 ) {
+                        $input = '<input type="hidden" name="MAX_FILE_SIZE" value="' . min($max_upload, $maxFileSize) . '"><input 
+                            name="input_' . $field->id . '" 
+                            id="input_' . $field->formId . '_' . $field->id . '" 
+                            type="file" 
+                            class="form-control ' . $field->size . '">';
+                        if ( $layout == 'horizontal' )
+                            $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    }
+                    break;
+                case 'list':
+                    print('<pre>'); print_r($field); print_r($value); print('</pre>');
+                    break;
+                case 'multiselect':
+                    $input = '<select multiple="multiple" 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        class="form-control ' . $field->size . '">';
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<option value="' . $v['value'] . '" ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'selected="selected"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'selected="selected"' : '' ) ) . '>' . $v['text'] . '</option>';
+                    }
+                    $input .= '</select>';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                    break;
+                case 'name':
+                    break;
+                case 'number':
+                    $input = '<input 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        type="text" 
+                        value="' . $value . '" 
+                        class="form-control ' . $field->size . '" 
+                        placeholder="' . $field->placeholder . '">';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'phone':
+                    $input = '<input 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        type="tel" 
+                        value="' . $value . '" 
+                        class="form-control ' . $field->size . '" 
+                        placeholder="' . $field->placeholder . '">';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'radio':
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<div class="radio" id="input_' . $field->formId . '_' . $field->id . '_' . ($k) . '">
+                                <label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k) . '">
+                                    <input 
+                                        name="input_' . $field->id . '" 
+                                        type="radio" 
+                                        value="' . $v['value'] . '" 
+                                        id="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" 
+                                        ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>
+                                    ' . $v['text'] . '
+                                </label>
+                            </div>';
+                    }
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'select':
+                    $input = '<select 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        class="form-control ' . $field->size . '">';
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<option value="' . $v['value'] . '" ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'selected="selected"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'selected="selected"' : '' ) ) . '>' . $v['text'] . '</option>';
+                    }
+                    $input .= '</select>';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'text':
+                    $input = '<input 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        type="text" 
+                        value="' . $value . '" 
+                        class="form-control ' . $field->size . '" 
+                        placeholder="' . $field->placeholder . '">';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'textarea':
+                    break;
+                case 'time':
+                    $input = '<div class="input-group col-sm-12">
+                            <input 
+                                type="text" 
+                                maxlength="2" 
+                                name="input_' . $field->id . '[]" 
+                                id="input_' . $field->formId . '_' . $field->id . '_1" 
+                                value="' . $value[0] . '" 
+                                class="form-control">
+                            <div class="input-group-addon">:HH</div>
+                            <input 
+                                type="text" 
+                                maxlength="2" 
+                                name="input_' . $field->id . '[]" 
+                                id="input_' . $field->formId . '_' . $field->id . '_2" 
+                                value="' . $value[1] . '" 
+                                class="form-control">
+                            <div class="input-group-addon">:MM</div>
+                            <select name="input_' . $field->id . '[]" id="input_' . $field->formId . '_' . $field->id . '_3" class="form-control">
+                                <option value="am" ' . ( $value[2] == 'am' ? 'selected="selected"' : '' ) . '>AM</option>
+                                <option value="pm" ' . ( $value[2] == 'pm' ? 'selected="selected"' : '' ) . '>PM</option>
+                            </select>
+                        </div>';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                case 'website':
+                    $input = '<input 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        type="text" 
+                        value="' . $value . '" 
+                        class="form-control ' . $field->size . '" 
+                        placeholder="' . $field->placeholder . '">';
+                    if ( $layout == 'horizontal' )
+                        $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
             return $input;
         }
 
@@ -199,6 +377,7 @@ if (class_exists("GFForms")) {
                 $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
                 $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
                 $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
+                $content = str_replace( 'validation_message', 'validation_message col-md-offset-' . $col_l . ' ', $content );
             }
             else {
             }
