@@ -59,6 +59,22 @@
 	width: 100%;
 }
 
+/* Datepicker fixes */
 .gform_wrapper .datepicker + .input-group-addon {
-	min-width: 45px;
+	min-width: 42px;
+}
+#ui-datepicker-div {
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	padding: 10px;
+}
+#ui-datepicker-div * {
+	padding-left: 2px;
+	padding-right: 2px;
+}
+.ui-datepicker-title select:last-child {
+	float: right;
+}
+.ui-datepicker-calendar {
+	margin-top: 10px;
 }
