@@ -60,10 +60,6 @@ if (class_exists("GFForms")) {
             parent::init();
             add_filter( 'gform_form_tag', array($this, 'bootstrap_form_tag'), 10, 2);
             add_filter( 'gform_submit_button', array($this, 'bootstrap_submit_button'), 10, 2 );
-            add_filter( 'gform_field_css_class', array($this, 'bootstrap_css_classes'), 10, 3);
-            add_filter( 'gform_field_content', array($this, 'bootstrap_field_content'), 10, 5 );
-            add_filter( 'gform_get_form_filter', array($this, 'bootstrap_gravity_form_filter'), 10, 2 );
-
             //add_filter("gform_field_content", array($this, "bootstrap_styles_for_gravityforms_fields"), 10, 5);
         }
 
@@ -76,6 +72,11 @@ if (class_exists("GFForms")) {
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
             add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
+            add_filter( 'gform_field_css_class', array($this, 'bootstrap_css_classes'), 10, 3);
+            add_filter( 'gform_field_content', array($this, 'bootstrap_field_content'), 10, 5 );
+            add_filter( 'gform_field_input' , array($this, 'bootstrap_field_input'), 10, 5 );
+            add_filter( 'gform_get_form_filter', array($this, 'bootstrap_gravity_form_filter'), 10, 2 );
+            add_filter( 'gform_tabindex', '__return_false' );
         }
 
         public function init_ajax(){
@@ -84,7 +85,9 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * Form Tag
+         * gform_form_tag
+         *
+         * This filter is executed when the form is displayed and can be used to completely change the form tag (i.e. <form method="post">).
          *
          */
         public function bootstrap_form_tag($form_tag, $form){
@@ -96,13 +99,15 @@ if (class_exists("GFForms")) {
                 $form_tag = str_replace( '<form ', '<form class="form-inline form-bootstrapped" ', $form_tag );
             }
             else if ( $settings['formlayout'] == 'horizontal' ) {
-                $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped"', $form_tag );
+                $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped" ', $form_tag );
             }
             return $form_tag;
         }
 
         /**
-         * Submit Button
+         * gform_submit_button
+         *
+         * This filter is executed when the form is displayed and can be used to completely change the form button tag (i.e. <input type="submit">).
          *
          */
         public function bootstrap_submit_button( $button, $form ) {
@@ -126,10 +131,15 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * CSS Classes
+         * gform_field_css_class
+         *
+         * This filter can be used to dynamically add/remove CSS classes to a field
          *
          */
         public function bootstrap_css_classes( $classes, $field, $form ){
+            if ( $field['type'] == "name" ) {
+                $classes .= " custom_name_class";
+            }
             $settings = $this->get_form_settings($form);
             $has_error = ( $field['failed_validation'] == 1 ? 'has-error' : '' );
             $size = ( isset($settings['btnsize']) ? $settings['btnsize'] : '' );
@@ -144,7 +154,389 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * Field Content
+         * gform_field_input
+         *
+         * This filter is executed before creating the field's input tag, allowing users to modify the field's input tag. It can also be used to create custom field types.
+         *
+         */
+        public function bootstrap_field_input( $input, $field, $value, $lead_id, $form_id ) {
+            $form = GFAPI::get_form($form_id);
+            $settings = $this->get_form_settings($form);
+            $layout = 'basic';
+            if ( isset( $settings['formlayout'] ) )
+                $layout = $settings['formlayout'];
+            $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
+
+            $_input_type = 'default';
+            $input_before = '';
+            $input_after = '';
+            $input_array = array(
+                'name'          => 'input_' . $field->id,
+                'id'            => 'input_' . $field->formId . '_' . $field->id,
+                'type'          => 'text',
+                'value'         => $value,
+                'class'         => 'form-control ' . $field->size . ' ',
+                'placeholder'   => $field->placeholder,
+                );
+
+            switch ($field->type) {
+                case 'address':
+                    $_input_type = false;
+                    break;
+                
+                case 'checkbox':
+                    $_input_type = false;
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<div class="checkbox" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">
+                                <label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">
+                                    <input 
+                                        name="input_' . $field->inputs[ $k ]['id'] . '" 
+                                        type="checkbox" 
+                                        value="' . $v['value'] . '" 
+                                        id="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" 
+                                        ' . ( ( ! empty( $value[ $field->inputs[ $k ]['id'] ] ) && $v['value'] == $value[ $field->inputs[ $k ]['id'] ] ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>
+                                    ' . $v['text'] . '
+                                </label>
+                            </div>';
+                    }
+                    
+                    break;
+                
+                case 'date':
+                    print('<pre>'); print_r($field); print_r($value); print('</pre>');
+                    switch ($field->dateType) {
+                        case 'datefield':
+                            $_input_type = false;
+                            $input_this = array();
+                            foreach ($field->inputs as $k => $v) {
+                                switch ($v['label']) {
+                                    case 'DD':
+                                        $min = 1;
+                                        $max = 31;
+                                        break;
+                                    
+                                    case 'MM':
+                                        $min = 1;
+                                        $max = 12;
+                                        break;
+                                    
+                                    case 'YYYY':
+                                        $min = date("Y") - 100;
+                                        $max = date("Y") + 100;
+                                        break;
+                                    
+                                    default:
+                                        # code...
+                                        break;
+                                }
+                                $input_this[] = '<div class="gfield_date_day col-sm-4" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '_container">
+                                    <input 
+                                        type="number" 
+                                        maxlength="' . strlen($v['label']) . '" 
+                                        name="input_' . $field->id . '[]" 
+                                        id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" 
+                                        class="form-control ' . $field->size . '" 
+                                        value="' . $v['defaultValue'] . '" 
+                                        min="' . $min . '" 
+                                        max="' . $max . '" 
+                                        step="1" 
+                                        placeholder="' . $v['placeholder'] . '">
+                                    <label for="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">' . ( ( isset($v['customLabel']) && ! empty($v['customLabel']) ) ? $v['customLabel'] : $v['label'] ) . '</label>
+                                </div>';
+                            }
+                            $input = '<div class="row">' . implode('', $input_this) . '</div>';
+                            break;
+
+                        case 'datedropdown':
+                            $_input_type = false;
+                            $input_this = array();
+                            $order = array_slice( str_split( $field->dateFormat ), 0, 3 );
+                            foreach ( $order as $k => $v ) {
+                                switch ( $v ) {
+                                    case 'm':
+                                        $min = 1;
+                                        $max = 12;
+                                        $index = 0;
+                                        break;
+                                    case 'd':
+                                        $min = 1;
+                                        $max = 31;
+                                        $index = 1;
+                                        break;
+                                    case 'y':
+                                        $min = date("Y") - 100;
+                                        $max = date("Y") + 100;
+                                        $index = 2;
+                                        break;
+                                }
+                                $select_this = '<div class="gfield_date_day col-sm-4" id="input_' . $field->formId . '_' . $field->id . '_' . ($index+1) . '_container">
+                                    <select name="input_' . $field->id . '[]" id="input_' . $field->formId . '_' . $field->id . '_' . ($index+1) . '" class="form-control ' . $field->size . '">
+                                        <option>' . ( ( isset( $field->inputs[ $index ]['customLabel'] ) && ! empty( $field->inputs[ $index ]['customLabel'] ) ) ? $field->inputs[ $index ]['customLabel'] : $field->inputs[ $index ]['label'] ) . '</option>';
+                                for ( $i = $min; $i < $max + 1 ; $i++) { 
+                                    $select_this .= '<option value="' . $i . '" ' . ( $value[ $k ] == $i ? 'selected="selected"' : ( empty( $value[ $k ] ) && $field->inputs[ $index ]['defaultValue'] == $i ? 'selected="selected"' : ( empty( $value[ $k ] ) && empty( $field->inputs[ $index ]['defaultValue'] ) && date("Y") == $i ? 'selected="selected"' : '' ) ) ) . '>' . $i . '</option>';
+                                }
+                                $select_this .= '</select></div>';
+                                $input_this[] = $select_this;
+                            }
+                            $input = '<div class="row">' . implode('', $input_this) . '</div>';
+                            break;
+
+                        case 'datepicker':
+                        default:
+                            $input_before = '<div class="input-group">';
+                            $classes = array(
+                                'datepicker',
+                                'form-control',
+                                $field->dateFormat,
+                                $field->size
+                            );
+                            $input_array['class'] = implode(' ', $classes);
+                            $input_after = '</div>';
+                            if ( $field->calendarIconType == 'calendar' ) {
+                                $input_after = '<div class="input-group-addon">
+                                    <img class="ui-datepicker-trigger" src="' . get_bloginfo('url') . '/wp-content/plugins/gravityforms/images/calendar.png" alt="..." title="...">
+                                    <input type="hidden" id="gforms_calendar_icon_input_' . $field->formId . '_' . $field->id . '" class="gform_hidden" value="' . get_bloginfo('url') . '/wp-content/plugins/gravityforms/images/calendar.png">
+                                    </div>' . $input_after;
+                            }
+                            break;
+                    }
+                    break;
+                
+                case 'email':
+                    $input_array['type'] = 'email';
+                    break;
+                
+                case 'fileupload':
+                    // Complete for single file upload. Still needs work for multi-file uploads
+                    $max_upload = (int)(ini_get('upload_max_filesize'));
+                    $maxFileSize = $field->maxFileSize * 1024 * 1024;
+                    if ( $field->multipleFiles != 1 ) {
+                        $input_before = '<input type="hidden" name="MAX_FILE_SIZE" value="' . min($max_upload, $maxFileSize) . '">';
+                        $input_array['type'] = 'file';
+                    }
+                    break;
+                
+                case 'list':
+                    $_input_type = false;
+                    break;
+                
+                case 'multiselect':
+                    $_input_type = false;
+                    $input = '<select multiple="multiple" 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        class="form-control ' . $field->size . '">';
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<option value="' . $v['value'] . '" ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'selected="selected"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'selected="selected"' : '' ) ) . '>' . $v['text'] . '</option>';
+                    }
+                    $input .= '</select>';
+                    break;
+                
+                case 'name':
+                    $_input_type = false;
+                    print('<pre>'); print_r($field); print_r($value); print('</pre>');
+                    '<div class="ginput_complex col-md-10 ginput_container  no_prefix has_first_name has_middle_name has_last_name no_suffix" id="input_1_6">
+                            
+                            <span id="input_1_6_3_container" class="name_first">
+                                                    <input type="text" name="input_6.3" id="input_1_6_3" value="">
+                                                    <label for="input_1_6_3">First</label>
+                                                </span>
+                            <span id="input_1_6_4_container" class="name_middle">
+                                                    <input type="text" name="input_6.4" id="input_1_6_4" value="">
+                                                    <label for="input_1_6_4">Middle</label>
+                                                </span>
+                            <span id="input_1_6_6_container" class="name_last">
+                                                    <input type="text" name="input_6.6" id="input_1_6_6" value="">
+                                                    <label for="input_1_6_6">Last</label>
+                                                </span>
+                            
+                        </div>';
+                    $input_this = array();
+                    foreach ($field->inputs as $k => $v) {
+                        switch ( $v['label'] ) {
+                            case 'Prefix':
+                                if ( $v['isHidden'] != 1 ) {
+                                    $label_this = '<label for="input_' . $field->formId . '_' . $field->id . '_2">' . ( isset( $v['customLabel'] ) ? $v['customLabel'] : $v['label'] ) . '</label>';
+                                    $select_this = '<select name="input_' . $v['id'] . '" id="input_' . $field->formId . '_' . $field->id . '_2" class="form-control"><option value="' . ( isset($v['placeholder']) ? $v['placeholder'] : '' ) . '">' . ( isset($v['placeholder']) ? $v['placeholder'] : '' ) . '</option>';
+                                    foreach ($v['choices'] as $kc => $vc) {
+                                        $select_this .= '<option 
+                                            value="' . $vc['value'] . '" ' . 
+                                            ( isset( $value[ $v['id'] ] ) && $value[ $v['id'] ] == $vc['value'] 
+                                                ? 'selected="selected"' 
+                                                : ( empty( $value[ $v['id'] ] ) && $v['defaultValue'] == $vc['value'] 
+                                                    ? 'selected="selected"' 
+                                                    : ( empty( $value[ $v['id'] ] ) && ( ! isset( $v['defaultValue'] ) || $v['defaultValue'] != $vc['value'] ) && $vc['isSelected'] == 1 ? 'selected="selected"' : '' ) ) ) . 
+                                            '>' . $vc['text'] . '</option>';
+                                    }
+                                    $select_this .= '</select>';
+                                    if ( $field->subLabelPlacement == 'above' ) {
+                                        $input_this[] = '<div class="col-sm-1">' . $label_this . $select_this . '</div>';
+                                    }
+                                    else {
+                                        $input_this[] = '<div class="col-sm-1">' . $select_this . $label_this . '</div>';
+                                    }
+                                }
+                                break;
+                            case 'First':
+                                # code...
+                                break;
+                            case 'Middle':
+                                # code...
+                                break;
+                            case 'Last':
+                                # code...
+                                break;
+                            case 'Suffix':
+                                if ( $v['isHidden'] != 1 ) {
+                                    if ( $field->subLabelPlacement == 'above' ) {
+                                        $input_this[] = '<div class="col-sm-2">' . $label_this . $field_this . '</div>';
+                                    }
+                                    else {
+                                        $input_this[] = '<div class="col-sm-2">' . $field_this . $label_this . '</div>';
+                                    }
+                                }
+                                break;
+                            
+                            default:
+                                # code...
+                                break;
+                        }
+                    }
+                    break;
+                
+                case 'number':
+                    $input_array['type'] = 'number';
+                    $input_array['step'] = 'any';
+                    $input_array['min'] = $field->rangeMin;
+                    $input_array['max'] = $field->rangeMax;
+                    break;
+                
+                case 'phone':
+                    $input_array['type'] = 'tel';
+                    break;
+                
+                case 'radio':
+                    $_input_type = false;
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<div class="radio" id="input_' . $field->formId . '_' . $field->id . '_' . ($k) . '">
+                                <label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k) . '">
+                                    <input 
+                                        name="input_' . $field->id . '" 
+                                        type="radio" 
+                                        value="' . $v['value'] . '" 
+                                        id="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" 
+                                        ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>
+                                    ' . $v['text'] . '
+                                </label>
+                            </div>';
+                    }
+                    break;
+                
+                case 'select':
+                    $_input_type = false;
+                    $input = '<select 
+                        name="input_' . $field->id . '" 
+                        id="input_' . $field->formId . '_' . $field->id . '" 
+                        class="form-control ' . $field->size . '">';
+                    foreach ($field->choices as $k => $v) {
+                        $input .= '<option value="' . $v['value'] . '" ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'selected="selected"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'selected="selected"' : '' ) ) . '>' . $v['text'] . '</option>';
+                    }
+                    $input .= '</select>';
+                    break;
+                
+                case 'text':
+                    $input_array['type'] = ( $field->enablePasswordInput == 1 ? 'password' : 'text' );
+                    break;
+                
+                case 'textarea':
+                    $_input_type = 'textarea';
+                    $input_array['type'] = null;
+                    $input_array['value'] = null;
+                    $input_array['rows'] = 10;
+                    $input_array['cols'] = 50;
+                    $input_array['class'] = 'textarea form-control ' . $field->size;
+                    break;
+                
+                case 'time':
+                    $_input_type = false;
+                    $input = '<div class="input-group col-sm-12">
+                            <input 
+                                type="text" 
+                                maxlength="2" 
+                                name="input_' . $field->id . '[]" 
+                                id="input_' . $field->formId . '_' . $field->id . '_1" 
+                                value="' . $value[0] . '" 
+                                class="form-control">
+                            <div class="input-group-addon">:HH</div>
+                            <input 
+                                type="text" 
+                                maxlength="2" 
+                                name="input_' . $field->id . '[]" 
+                                id="input_' . $field->formId . '_' . $field->id . '_2" 
+                                value="' . $value[1] . '" 
+                                class="form-control">
+                            <div class="input-group-addon">:MM</div>
+                            <select name="input_' . $field->id . '[]" id="input_' . $field->formId . '_' . $field->id . '_3" class="form-control">
+                                <option value="am" ' . ( $value[2] == 'am' ? 'selected="selected"' : '' ) . '>AM</option>
+                                <option value="pm" ' . ( $value[2] == 'pm' ? 'selected="selected"' : '' ) . '>PM</option>
+                            </select>
+                        </div>';
+                    break;
+                
+                case 'website':
+                    $input_array['type'] = 'text';
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
+            array_filter( $input_array );
+
+            if ( $_input_type == 'default' ) :
+
+                if ( is_array( $field->conditionalLogicFields ) && ! empty( $field->conditionalLogicFields ) ) {
+                    $input_array['onchange'] = 'gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . ']);';
+                    $input_array['onkeyup'] = 'clearTimeout(__gf_timeout_handle); __gf_timeout_handle = setTimeout(&quot;gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . '])&quot;, 300);';
+                }
+                
+                $input = $input_before;
+                $input .= '<input ';
+                foreach ($input_array as $k => $v) {
+                    $input .= $k . '="' . $v . '" ';
+                }
+                $input .= '/>';
+                $input .= $input_after;
+            
+            elseif ( $_input_type == 'textarea' ) :
+
+                if ( is_array( $field->conditionalLogicFields ) && ! empty( $field->conditionalLogicFields ) ) {
+                    $input_array['onchange'] = 'gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . ']);';
+                    $input_array['onkeyup'] = 'clearTimeout(__gf_timeout_handle); __gf_timeout_handle = setTimeout(&quot;gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . '])&quot;, 300);';
+                }
+
+                $input = $input_before;
+                $input .= '<textarea ';
+                foreach ($input_array as $k => $v) {
+                    $input .= $k . '="' . $v . '" ';
+                }
+                $input .= '>' . $value . '</textarea>';
+                $input .= $input_after;
+
+            endif;
+
+            if ( $layout == 'horizontal' && ! empty( $input ) ) :
+                $input = '<div class="col-sm-' . $col_r . '">' . $input . '</div>';
+            endif;
+
+            return $input;
+        }
+
+        /**
+         * gform_field_content
+         *
+         * This filter is executed before creating the field's content, allowing users to completely modify the way the field is rendered. It can also be used to create custom field types.
          *
          */
         public function bootstrap_field_content( $content, $field, $value, $lead_id, $form_id ) {
@@ -176,6 +568,7 @@ if (class_exists("GFForms")) {
                 $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
                 $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
                 $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
+                $content = str_replace( 'validation_message', 'validation_message col-md-offset-' . $col_l . ' ', $content );
             }
             else {
             }
@@ -187,7 +580,8 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * Hook to filter gform_get_form_filter
+         * gform_get_form_filter
+         *
          * to clean up & inject some stuff..
          */
         public function bootstrap_gravity_form_filter( $form_string, $form ) {
