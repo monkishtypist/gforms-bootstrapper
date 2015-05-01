@@ -78,3 +78,8 @@
 .ui-datepicker-calendar {
 	margin-top: 10px;
 }
+
+/* address fixes */
+div.copy_values_option_container.checkbox {
+	margin-bottom: 10px;
+}
