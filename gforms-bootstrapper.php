@@ -125,7 +125,7 @@ if (class_exists("GFForms")) {
             $button = str_replace( '>', 'data-loading-text="Processing..." >', $button );
             
             if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
-                $button = '<div class="col-md-offset-'.$col_l.' col-md-'.$col_r.'">' . $button . '</div>';
+                $button = '<div class="col-sm-offset-'.$col_l.' col-sm-'.$col_r.'">' . $button . '</div>';
             }
             return $button;
         }
@@ -180,31 +180,121 @@ if (class_exists("GFForms")) {
                 );
 
             switch ($field->type) {
+
+                /**
+                 * Address
+                 *
+                 * @return string
+                 */
                 case 'address':
                     $_input_type = false;
-                    break;
-                
-                case 'checkbox':
-                    $_input_type = false;
-                    foreach ($field->choices as $k => $v) {
-                        $input .= '<div class="checkbox" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">
-                                <label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">
-                                    <input 
-                                        name="input_' . $field->inputs[ $k ]['id'] . '" 
-                                        type="checkbox" 
-                                        value="' . $v['value'] . '" 
-                                        id="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" 
-                                        ' . ( ( ! empty( $value[ $field->inputs[ $k ]['id'] ] ) && $v['value'] == $value[ $field->inputs[ $k ]['id'] ] ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>
-                                    ' . $v['text'] . '
-                                </label>
-                            </div>';
+                    print('<pre>'); print_r($field); print_r($value); print('</pre>');
+
+                    $_cols_arr = array( 'col-sm-12', 'col-sm-12', 'col-sm-6', 'col-sm-6', 'col-sm-6', 'col-sm-6' );
+
+                    $input_this = array();
+
+                    $input_before = '';
+
+                    if ( $field->enableCopyValuesOption ) {
+                        $input_before = '<div class="checkbox copy_values_option_container col-sm-12" id="input_' . $field->formId . '_' . $field->id . '_copy_values_option_container">'.
+                                '<label for="input_' . $field->formId . '_' . $field->id . '_copy_values_activated" id="input_' . $field->formId . '_' . $field->id . '_copy_values_option_label" class="copy_values_option_label">'.
+                                    '<input '.
+                                        'name="input_' . $field->id . '_copy_values_activated" '.
+                                        'type="checkbox" '.
+                                        'value="' . $field->enableCopyValuesOption . '" '.
+                                        'id="input_' . $field->formId . '_' . $field->id . '_copy_values_activated" '.
+                                        'class="copy_values_activated" '.
+                                        ( ( isset( $value[ $field->id . '_copy_values_activated' ] ) && $value[ $field->id . '_copy_values_activated' ] == 1 ) || ( ! isset( $value[ $field->id . '_copy_values_activated' ] ) && $field->copyValuesOptionDefault == 1 ) ? 'checked="checked"' : '' ) . '>'.
+                                    $field->copyValuesOptionLabel.
+                                '</label>'.
+                            '</div>';
                     }
+
+                    foreach ($field->inputs as $k => $v) {
+
+                        $_input_id = explode( '.', $v['id'] );
+
+                        $_this_label = ( ( ! isset( $v['isHidden'] ) || $v['isHidden'] != 1 ) ? '<label '.
+                                'for="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" '.
+                                'id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '_label">'.
+                                ( isset( $v['customLabel'] ) ? $v['customLabel'] : $v['label'] ).
+                            '</label>' : '' );
+
+                        if ( $v['label'] == 'Country' && $field->addressType == 'international' ) {
+                            $_this_input = $this->gform_country_select( $field->id, $_input_id[1], $field->formId, $value );
+                        }
+                        elseif ( $v['label'] == 'Country' && ( $field->addressType == 'us' || $field->addressType == 'canadian' ) ) {
+                            $_this_input = '<input '.
+                                    'type="' . ( ! isset( $v['isHidden'] ) || $v['isHidden'] != 1 ? 'text' : 'hidden' ) . '" '.
+                                    'name="input_' . $v['id'] . '" '.
+                                    'id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" '.
+                                    'class="form-control ' . $field->size . '" '.
+                                    'value="' . $field->defaultCountry . '" '.
+                                    ( isset( $v['isHidden'] ) && $v['isHidden'] == 1 ? '' : 'readonly' ) . ' />';
+                        }
+                        else {
+                            $_this_input = '<input '.
+                                    'type="' . ( ! isset( $v['isHidden'] ) || $v['isHidden'] != 1 ? 'text' : 'hidden' ) . '" '.
+                                    'name="input_' . $v['id'] . '" '.
+                                    'id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" '.
+                                    'class="form-control ' . $field->size . '" '.
+                                    'value="' . ( ! empty( $value[ (string) $v['id'] ] ) ? $value[ (string) $v['id'] ] : ( isset( $v['defaultValue'] ) ? $v['defaultValue'] : ( $v['label'] == 'ZIP / Postal Code' ? $field->defaultState : '' ) ) ) . '" '.
+                                    'placeholder="' . ( isset( $v['placeholder'] ) ? $v['placeholder'] : '' ) . '" />';
+                        }
+                        if ( $field->subLabelPlacement == 'above' ) {
+                            $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_label . $_this_input . '</div>';
+                        }
+                        else {
+                            $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_input . $_this_label . '</div>';
+                        }
+                    }
+
+                    $input = '<div class="row">'. 
+                        $input_before. 
+                        '<div '.
+                        'id="input_' . $field->formId . '_' . $field->id . '" '.
+                        'class="ginput_complex" '.
+                        ( ( isset( $value[ $field->id . '_copy_values_activated' ] ) && $value[ $field->id . '_copy_values_activated' ] == 1 ) || ( ! isset( $value[ $field->id . '_copy_values_activated' ] ) && $field->copyValuesOptionDefault == 1 ) ? 'style="display: none;" ' : '' ).
+                        '>'.
+                        implode('', $input_this).
+                        '</div></div>';
                     
                     break;
+
+                /**
+                 * Checkboxes
+                 *
+                 * @return string
+                 */                
+                case 'checkbox':
+
+                    $_input_type = false;
+                    $input_this = array();
+                    foreach ($field->choices as $k => $v) {
+                        $input_this[] = '<div class="checkbox" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">'.
+                                '<label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">'.
+                                    '<input '.
+                                        'name="input_' . $field->inputs[ $k ]['id'] . '" '.
+                                        'type="checkbox" '.
+                                        'value="' . $v['value'] . '" '.
+                                        'id="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" '.
+                                        ( ( ! empty( $value[ (string) $v['id'] ] ) && $v['value'] == $value[ (string) $v['id'] ] ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>'.
+                                    $v['text'].
+                                '</label>'.
+                            '</div>';
+                    }
+                    $input = implode('', $input_this);
+                    break;
                 
+                /**
+                 * Date
+                 *
+                 * @return string
+                 */
                 case 'date':
-                    print('<pre>'); print_r($field); print_r($value); print('</pre>');
                     switch ($field->dateType) {
+                        // Date Field is 3 input fields
                         case 'datefield':
                             $_input_type = false;
                             $input_this = array();
@@ -246,7 +336,7 @@ if (class_exists("GFForms")) {
                             }
                             $input = '<div class="row">' . implode('', $input_this) . '</div>';
                             break;
-
+                        // datedropdown is 3 select fields
                         case 'datedropdown':
                             $_input_type = false;
                             $input_this = array();
@@ -269,18 +359,18 @@ if (class_exists("GFForms")) {
                                         $index = 2;
                                         break;
                                 }
-                                $select_this = '<div class="gfield_date_day col-sm-4" id="input_' . $field->formId . '_' . $field->id . '_' . ($index+1) . '_container">
+                                $_this_input = '<div class="gfield_date_day col-sm-4" id="input_' . $field->formId . '_' . $field->id . '_' . ($index+1) . '_container">
                                     <select name="input_' . $field->id . '[]" id="input_' . $field->formId . '_' . $field->id . '_' . ($index+1) . '" class="form-control ' . $field->size . '">
                                         <option>' . ( ( isset( $field->inputs[ $index ]['customLabel'] ) && ! empty( $field->inputs[ $index ]['customLabel'] ) ) ? $field->inputs[ $index ]['customLabel'] : $field->inputs[ $index ]['label'] ) . '</option>';
                                 for ( $i = $min; $i < $max + 1 ; $i++) { 
-                                    $select_this .= '<option value="' . $i . '" ' . ( $value[ $k ] == $i ? 'selected="selected"' : ( empty( $value[ $k ] ) && $field->inputs[ $index ]['defaultValue'] == $i ? 'selected="selected"' : ( empty( $value[ $k ] ) && empty( $field->inputs[ $index ]['defaultValue'] ) && date("Y") == $i ? 'selected="selected"' : '' ) ) ) . '>' . $i . '</option>';
+                                    $_this_input .= '<option value="' . $i . '" ' . ( $value[ $k ] == $i ? 'selected="selected"' : ( empty( $value[ $k ] ) && $field->inputs[ $index ]['defaultValue'] == $i ? 'selected="selected"' : ( empty( $value[ $k ] ) && empty( $field->inputs[ $index ]['defaultValue'] ) && date("Y") == $i ? 'selected="selected"' : '' ) ) ) . '>' . $i . '</option>';
                                 }
-                                $select_this .= '</select></div>';
-                                $input_this[] = $select_this;
+                                $_this_input .= '</select></div>';
+                                $input_this[] = $_this_input;
                             }
                             $input = '<div class="row">' . implode('', $input_this) . '</div>';
                             break;
-
+                        // datepicker is jquery datepicker UI
                         case 'datepicker':
                         default:
                             $input_before = '<div class="input-group">';
@@ -302,10 +392,20 @@ if (class_exists("GFForms")) {
                     }
                     break;
                 
+                /**
+                 * Email
+                 *
+                 * @return string
+                 */
                 case 'email':
                     $input_array['type'] = 'email';
                     break;
                 
+                /**
+                 * File Upload
+                 *
+                 * @return string
+                 */
                 case 'fileupload':
                     // Complete for single file upload. Still needs work for multi-file uploads
                     $max_upload = (int)(ini_get('upload_max_filesize'));
@@ -316,10 +416,20 @@ if (class_exists("GFForms")) {
                     }
                     break;
                 
+                /**
+                 * List
+                 *
+                 * @return string
+                 */
                 case 'list':
                     $_input_type = false;
                     break;
                 
+                /**
+                 * Multi-Select
+                 *
+                 * @return string
+                 */
                 case 'multiselect':
                     $_input_type = false;
                     $input = '<select multiple="multiple" 
@@ -332,78 +442,119 @@ if (class_exists("GFForms")) {
                     $input .= '</select>';
                     break;
                 
+                /**
+                 * Name
+                 *
+                 * @return string
+                 */
                 case 'name':
                     $_input_type = false;
-                    print('<pre>'); print_r($field); print_r($value); print('</pre>');
-                    '<div class="ginput_complex col-md-10 ginput_container  no_prefix has_first_name has_middle_name has_last_name no_suffix" id="input_1_6">
-                            
-                            <span id="input_1_6_3_container" class="name_first">
-                                                    <input type="text" name="input_6.3" id="input_1_6_3" value="">
-                                                    <label for="input_1_6_3">First</label>
-                                                </span>
-                            <span id="input_1_6_4_container" class="name_middle">
-                                                    <input type="text" name="input_6.4" id="input_1_6_4" value="">
-                                                    <label for="input_1_6_4">Middle</label>
-                                                </span>
-                            <span id="input_1_6_6_container" class="name_last">
-                                                    <input type="text" name="input_6.6" id="input_1_6_6" value="">
-                                                    <label for="input_1_6_6">Last</label>
-                                                </span>
-                            
-                        </div>';
                     $input_this = array();
+                    
+                    /**
+                     * Count Columns based on visible inputs
+                     *
+                     * Available value / options
+                     * p = prefix, f = first name, m = middle name, l = last name, s = suffix
+                     * 0 - none
+                     * 1 - p
+                     * 2 - f
+                     * 4 - m
+                     * 8 - l
+                     * 16 - s
+                     *
+                     * Outputs as binary: 10101, up to 5 digits/places
+                     */
+                    $_cols = 0;
                     foreach ($field->inputs as $k => $v) {
-                        switch ( $v['label'] ) {
-                            case 'Prefix':
-                                if ( $v['isHidden'] != 1 ) {
-                                    $label_this = '<label for="input_' . $field->formId . '_' . $field->id . '_2">' . ( isset( $v['customLabel'] ) ? $v['customLabel'] : $v['label'] ) . '</label>';
-                                    $select_this = '<select name="input_' . $v['id'] . '" id="input_' . $field->formId . '_' . $field->id . '_2" class="form-control"><option value="' . ( isset($v['placeholder']) ? $v['placeholder'] : '' ) . '">' . ( isset($v['placeholder']) ? $v['placeholder'] : '' ) . '</option>';
+                        $_cols += ( isset( $v['isHidden'] ) && $v['isHidden'] == 1 ? 0 : pow( 2, $k ) );
+                    }
+                    // array of classes based on visible fields
+                    $_cols_arr = array(
+                        1 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg' ),
+                        2 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-12', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg' ),
+                        3 => array( 'col-sm-2', 'col-sm-10', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg' ),
+                        4 => array( 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg' ),
+                        5 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'col-sm-10', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg' ),
+                        6 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-6', 'col-sm-6', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg' ),
+                        7 => array( 'col-sm-2', 'col-sm-5', 'col-sm-5', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg' ),
+                        8 => array( 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-12', 'hidden-sm hidden-md hidden-lg' ),
+                        9 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-10', 'hidden-sm hidden-md hidden-lg' ),
+                        10 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-6', 'hidden-sm hidden-md hidden-lg', 'col-sm-6', 'hidden-sm hidden-md hidden-lg' ),
+                        11 => array( 'col-sm-2', 'col-sm-5', 'hidden-sm hidden-md hidden-lg', 'col-sm-5', 'hidden-sm hidden-md hidden-lg' ),
+                        12 => array( 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-6', 'col-sm-6', 'hidden-sm hidden-md hidden-lg' ),
+                        13 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'col-sm-5', 'col-sm-5', 'hidden-sm hidden-md hidden-lg' ),
+                        14 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-4', 'col-sm-4', 'col-sm-4', 'hidden-sm hidden-md hidden-lg' ),
+                        15 => array( 'col-sm-2', 'col-sm-4', 'col-sm-2', 'col-sm-4', 'hidden-sm hidden-md hidden-lg' ),
+                        16 => array( 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        17 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        18 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-10', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        19 => array( 'col-sm-2', 'col-sm-8', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        20 => array( 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-10', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        21 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'col-sm-8', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        22 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-5', 'col-sm-5', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        23 => array( 'col-sm-2', 'col-sm-4', 'col-sm-4', 'hidden-sm hidden-md hidden-lg', 'col-sm-2' ),
+                        24 => array( 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-10', 'col-sm-2' ),
+                        25 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-8', 'col-sm-2' ),
+                        26 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-5', 'hidden-sm hidden-md hidden-lg', 'col-sm-5', 'col-sm-2' ),
+                        27 => array( 'col-sm-2', 'col-sm-4', 'hidden-sm hidden-md hidden-lg', 'col-sm-4', 'col-sm-2' ),
+                        28 => array( 'hidden-sm hidden-md hidden-lg', 'hidden-sm hidden-md hidden-lg', 'col-sm-5', 'col-sm-5', 'col-sm-2' ),
+                        29 => array( 'col-sm-2', 'hidden-sm hidden-md hidden-lg', 'col-sm-4', 'col-sm-4', 'col-sm-2' ),
+                        30 => array( 'hidden-sm hidden-md hidden-lg', 'col-sm-3', 'col-sm-3', 'col-sm-3', 'col-sm-3' ),
+                        31 => array( 'col-sm-2', 'col-sm-3', 'col-sm-2', 'col-sm-3', 'col-sm-2' )
+                    );
+
+                    foreach ($field->inputs as $k => $v) {
+                        
+                        if ( ! isset( $v['isHidden'] ) || $v['isHidden'] != 1 ) {
+                            
+                            $_input_id = explode( '.', $v['id'] );
+                            switch ( $v['label'] ) {
+                                
+                                case 'Prefix':
+                                    $_this_label = '<label for="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '">' . ( isset( $v['customLabel'] ) ? $v['customLabel'] : $v['label'] ) . '</label>';
+                                    $_this_input = '<select name="input_' . $v['id'] . '" id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" class="form-control"><option value="' . ( isset($v['placeholder']) ? $v['placeholder'] : '' ) . '">' . ( isset($v['placeholder']) ? $v['placeholder'] : '' ) . '</option>';
                                     foreach ($v['choices'] as $kc => $vc) {
-                                        $select_this .= '<option 
+                                        $_this_input .= '<option 
                                             value="' . $vc['value'] . '" ' . 
                                             ( isset( $value[ $v['id'] ] ) && $value[ $v['id'] ] == $vc['value'] 
                                                 ? 'selected="selected"' 
                                                 : ( empty( $value[ $v['id'] ] ) && $v['defaultValue'] == $vc['value'] 
                                                     ? 'selected="selected"' 
-                                                    : ( empty( $value[ $v['id'] ] ) && ( ! isset( $v['defaultValue'] ) || $v['defaultValue'] != $vc['value'] ) && $vc['isSelected'] == 1 ? 'selected="selected"' : '' ) ) ) . 
+                                                    : ( empty( $value[ (string) $v['id'] ] ) && ( ! isset( $v['defaultValue'] ) || $v['defaultValue'] != $vc['value'] ) && $vc['isSelected'] == 1 ? 'selected="selected"' : '' ) ) ) . 
                                             '>' . $vc['text'] . '</option>';
                                     }
-                                    $select_this .= '</select>';
-                                    if ( $field->subLabelPlacement == 'above' ) {
-                                        $input_this[] = '<div class="col-sm-1">' . $label_this . $select_this . '</div>';
-                                    }
-                                    else {
-                                        $input_this[] = '<div class="col-sm-1">' . $select_this . $label_this . '</div>';
-                                    }
-                                }
-                                break;
-                            case 'First':
-                                # code...
-                                break;
-                            case 'Middle':
-                                # code...
-                                break;
-                            case 'Last':
-                                # code...
-                                break;
-                            case 'Suffix':
-                                if ( $v['isHidden'] != 1 ) {
-                                    if ( $field->subLabelPlacement == 'above' ) {
-                                        $input_this[] = '<div class="col-sm-2">' . $label_this . $field_this . '</div>';
-                                    }
-                                    else {
-                                        $input_this[] = '<div class="col-sm-2">' . $field_this . $label_this . '</div>';
-                                    }
-                                }
-                                break;
+                                    $_this_input .= '</select>';
+                                    break;
+                                
+                                case 'First':
+                                case 'Middle':
+                                case 'Last':
+                                case 'Suffix':
+                                default:
+                                    $_this_label = '<label for="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '">' . ( isset( $v['customLabel'] ) ? $v['customLabel'] : $v['label'] ) . '</label>';
+                                    $_this_input = '<input type="text" name="input_' . $v['id'] . '" id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" class="form-control ' . $field->size . '" value="' . ( isset( $value[ $v['id'] ] ) ? $value[ $v['id'] ] : ( isset( $v['defaultValue'] ) ? $v['defaultValue'] : '' ) ) . '">';
+                                    break;
                             
-                            default:
-                                # code...
-                                break;
+                            }
+                            
+                            if ( $field->subLabelPlacement == 'above' ) {
+                                $input_this[] = '<div class="'.$_cols_arr[ $_cols ][ $k ].'">' . $_this_label . $_this_input . '</div>';
+                            }
+                            else {
+                                $input_this[] = '<div class="'.$_cols_arr[ $_cols ][ $k ].'">' . $_this_input . $_this_label . '</div>';
+                            }
+                        
                         }
                     }
+                    $input = '<div class="row">' . implode('', $input_this) . '</div>';
                     break;
                 
+                /**
+                 * Number
+                 *
+                 * @return string
+                 */
                 case 'number':
                     $input_array['type'] = 'number';
                     $input_array['step'] = 'any';
@@ -411,27 +562,43 @@ if (class_exists("GFForms")) {
                     $input_array['max'] = $field->rangeMax;
                     break;
                 
+                /**
+                 * Phone
+                 *
+                 * @return string
+                 */
                 case 'phone':
                     $input_array['type'] = 'tel';
                     break;
                 
+                /**
+                 * Radio
+                 *
+                 * @return string
+                 */
                 case 'radio':
                     $_input_type = false;
                     foreach ($field->choices as $k => $v) {
-                        $input .= '<div class="radio" id="input_' . $field->formId . '_' . $field->id . '_' . ($k) . '">
-                                <label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k) . '">
-                                    <input 
-                                        name="input_' . $field->id . '" 
-                                        type="radio" 
-                                        value="' . $v['value'] . '" 
-                                        id="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" 
-                                        ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>
-                                    ' . $v['text'] . '
-                                </label>
-                            </div>';
+                        $input .= '<div class="radio" id="input_' . $field->formId . '_' . $field->id . '_' . ($k) . '">'.
+                                '<label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k) . '">'.
+                                    '<input '.
+                                        'name="input_' . $field->id . '" '.
+                                        'type="radio" '.
+                                        'value="' . $v['value'] . '" '.
+                                        'id="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" '.
+                                        ( ( ! empty( $value ) && $v['value'] == $value ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ).
+                                        '>'.
+                                    $v['text'].
+                                '</label>'.
+                            '</div>';
                     }
                     break;
                 
+                /**
+                 * Select
+                 *
+                 * @return string
+                 */
                 case 'select':
                     $_input_type = false;
                     $input = '<select 
@@ -444,10 +611,20 @@ if (class_exists("GFForms")) {
                     $input .= '</select>';
                     break;
                 
+                /**
+                 * Text
+                 *
+                 * @return string
+                 */
                 case 'text':
                     $input_array['type'] = ( $field->enablePasswordInput == 1 ? 'password' : 'text' );
                     break;
                 
+                /**
+                 * Textarea
+                 *
+                 * @return string
+                 */
                 case 'textarea':
                     $_input_type = 'textarea';
                     $input_array['type'] = null;
@@ -457,43 +634,65 @@ if (class_exists("GFForms")) {
                     $input_array['class'] = 'textarea form-control ' . $field->size;
                     break;
                 
+                /**
+                 * Time
+                 *
+                 * @return string
+                 */
                 case 'time':
                     $_input_type = false;
-                    $input = '<div class="input-group col-sm-12">
-                            <input 
-                                type="text" 
-                                maxlength="2" 
-                                name="input_' . $field->id . '[]" 
-                                id="input_' . $field->formId . '_' . $field->id . '_1" 
-                                value="' . $value[0] . '" 
-                                class="form-control">
-                            <div class="input-group-addon">:HH</div>
-                            <input 
-                                type="text" 
-                                maxlength="2" 
-                                name="input_' . $field->id . '[]" 
-                                id="input_' . $field->formId . '_' . $field->id . '_2" 
-                                value="' . $value[1] . '" 
-                                class="form-control">
-                            <div class="input-group-addon">:MM</div>
-                            <select name="input_' . $field->id . '[]" id="input_' . $field->formId . '_' . $field->id . '_3" class="form-control">
-                                <option value="am" ' . ( $value[2] == 'am' ? 'selected="selected"' : '' ) . '>AM</option>
-                                <option value="pm" ' . ( $value[2] == 'pm' ? 'selected="selected"' : '' ) . '>PM</option>
-                            </select>
-                        </div>';
+                    $_cols_arr = array(
+                        array( 'col-sm-5', 'col-sm-5', 'col-sm-2' ),
+                        array( 'col-sm-6', 'col-sm-6', 'hidden' )
+                    );
+                    $input_this = array();
+                    foreach ($field->inputs as $k => $v) {
+
+                        $_input_id = explode( '.', $v['id'] );
+
+                        if ( $k == 2 && ( ! isset( $field->timeFormat ) || $field->timeFormat == 12 ) ) {
+                            $input_this[] = '<div class="col-sm-2">'.
+                                    '<select name="input_' . $field->id . '[]" id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" class="form-control">'.
+                                        '<option value="am" ' . ( isset( $value[ $k ] ) && $value[ $k ] == 'am' ? 'selected="selected"' : ( isset( $value[ (string) $v['id'] ] ) && $value[ (string) $v['id'] ] == 'am' ? 'selected="selected"' : '' ) ) . '>AM</option>'.
+                                        '<option value="pm" ' . ( isset( $value[ $k ] ) && $value[ $k ] == 'pm' ? 'selected="selected"' : ( isset( $value[ (string) $v['id'] ] ) && $value[ (string) $v['id'] ] == 'pm' ? 'selected="selected"' : '' ) ) . '>PM</option>'.
+                                    '</select>'.
+                                '</div>';
+                        }
+                        elseif ( $k < 2 ) {
+                            $input_this[] = '<div class="' . ( ! isset( $field->timeFormat ) || $field->timeFormat == 12 ? 'col-sm-5' : 'col-sm-6' ) . '">'.
+                                '<div class="input-group">'.
+                                    '<input '.
+                                        'type="text" '.
+                                        'maxlength="2" '.
+                                        'name="input_' . $field->id . '[]" '.
+                                        'id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" '.
+                                        'value="' . ( isset( $value[ $k ] ) ? $value[ $k ] : ( isset( $value[ (string) $v['id'] ] ) ? $value[ (string) $v['id'] ] : '' ) ) . '" '.
+                                        'class="form-control ' . $field->size . '" '.
+                                        'placeholder="' . ( isset( $v['placeholder'] ) ? $v['placeholder'] : '' ) . '">'.
+                                    '<div class="input-group-addon">' . ( isset( $v['customLabel'] ) ? $v['customLabel'] : $v['label'] ) . '</div>'.
+                                '</div></div>';
+                        }
+
+                    }
+                    $input = '<div class="row">' . implode('', $input_this) . '</div>';
                     break;
                 
+                /**
+                 * Website
+                 *
+                 * @return string
+                 */
                 case 'website':
                     $input_array['type'] = 'text';
                     break;
                 
                 default:
-                    # code...
                     break;
             }
 
-            array_filter( $input_array );
+            array_filter( $input_array ); // remove empty array values
 
+            // Build final input string(s)
             if ( $_input_type == 'default' ) :
 
                 if ( is_array( $field->conditionalLogicFields ) && ! empty( $field->conditionalLogicFields ) ) {
@@ -544,37 +743,30 @@ if (class_exists("GFForms")) {
             $settings = $this->get_form_settings($form);
             $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
             $col_l = 12 - $col_r;
-            $offset = ( in_array( $field['cssClass'], array( 'tsbplaceholder', 'gf-add-placeholder' ) ) ? 'col-md-offset-'.$col_l : '' );
+            $offset = ( in_array( $field['cssClass'], array( 'tsbplaceholder', 'gf-add-placeholder' ) ) ? 'col-sm-offset-'.$col_l : '' );
 
-            if ( $field['type'] == 'checkbox' ) {
-                /* This regex is meant to modify the html for each checkbox placing the <input> inside the <label>
-                 * However, for some unknown reason the regex is not working at all inside this API class
-                 */
-                //$regex = '/((((\<div class\=\"gchoice)(.*?)(?=\>)(\>))(\s*))((\<input)(.*?)(?=\>)(\>))(\s*)((\<label)(.*?)(?=\>)(\>))([\w\d\s]*)(\<\/label\>)(\s*)(\<\/div\>))/';
-                //$replace = '$3$13$8$17$18$20';
-                //$content = preg_replace($regex, $replace, $content, -1);
-                //$content = str_replace('gfield_checkbox', 'gfield_checkbox checkbox', $content);
-            }
 
             if ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) {
-                $content = str_replace( '<div ', '<span ', $content );
-                $content = str_replace( '</div>', '</span>', $content );
+                //$content = str_replace( '<div ', '<span ', $content );
+                //$content = str_replace( '</div>', '</span>', $content );
             }
             else if ( $settings['formlayout'] == 'inline' ) {
                 $content = str_replace( '<div ', '<span ', $content );
                 $content = str_replace( '</div>', '</span>', $content );
             }
             else if ( $settings['formlayout'] == 'horizontal' ) {
-                $content = str_replace( 'ginput_container', 'col-md-'.$col_r.' ginput_container ' . $offset, $content );
-                $content = str_replace( 'gfield_label', 'col-md-'.$col_l.' control-label gfield_label', $content );
-                $content = str_replace( 'gfield_description', 'gfield_description help-block col-md-'.$col_r.' ' . $offset, $content );
-                $content = str_replace( 'validation_message', 'validation_message col-md-offset-' . $col_l . ' ', $content );
+                $content = str_replace( 'ginput_container', 'col-sm-'.$col_r.' ginput_container ' . $offset, $content );
+                $content = str_replace( 'gfield_label', 'gfield_label col-sm-'.$col_l, $content );
+                $content = str_replace( 'gfield_description', 'gfield_description col-sm-'.$col_r.' ' . $offset, $content );
+                $content = str_replace( 'validation_message', 'validation_message col-sm-offset-' . $col_l . ' ', $content );
             }
             else {
             }
-            $content = str_replace( 'small', 'small form-control input-sm', $content );
-            $content = str_replace( 'medium', 'medium form-control', $content );
-            $content = str_replace( 'large', 'large form-control input-lg', $content );
+            $content = str_replace( 'gfield_label', 'control-label gfield_label', $content );
+            $content = str_replace( 'gfield_description', 'help-block gfield_description', $content );
+            $content = str_replace( 'small', 'small input-sm', $content );
+            $content = str_replace( 'medium', 'medium', $content );
+            $content = str_replace( 'large', 'large input-lg', $content );
             
             return $content;
         }
@@ -621,9 +813,23 @@ if (class_exists("GFForms")) {
             }
 
             
-            $form_string = str_replace( 'gf_left_half', 'gf_left_half col-md-6 pull-left', $form_string );
-            $form_string = str_replace( 'gf_right_half', 'gf_right_half col-md-6 pull-right', $form_string );
+            $form_string = str_replace( 'gf_left_half', 'gf_left_half col-sm-6 pull-left', $form_string );
+            $form_string = str_replace( 'gf_right_half', 'gf_right_half col-sm-6 pull-right', $form_string );
             return $form_string;
+        }
+
+        /**
+         *
+         * gform_country_select()
+         *
+         * @return string
+         *
+         */
+        public function gform_country_select( $field_id, $input_id, $form_id, $value ) {
+            return '<select name="input_'.$field_id.'.'.$input_id.'" id="input_'.$form_id.'_'.$field_id.'_'.$input_id.'" class="form-control">'.
+                '<option value=""></option>'.
+                '<option value="Afghanistan">Afghanistan</option><option value="Albania">Albania</option><option value="Algeria">Algeria</option><option value="American Samoa">American Samoa</option><option value="Andorra">Andorra</option><option value="Angola">Angola</option><option value="Antigua and Barbuda">Antigua and Barbuda</option><option value="Argentina">Argentina</option><option value="Armenia">Armenia</option><option value="Australia">Australia</option><option value="Austria">Austria</option><option value="Azerbaijan">Azerbaijan</option><option value="Bahamas">Bahamas</option><option value="Bahrain">Bahrain</option><option value="Bangladesh">Bangladesh</option><option value="Barbados">Barbados</option><option value="Belarus">Belarus</option><option value="Belgium">Belgium</option><option value="Belize">Belize</option><option value="Benin">Benin</option><option value="Bermuda">Bermuda</option><option value="Bhutan">Bhutan</option><option value="Bolivia">Bolivia</option><option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option><option value="Botswana">Botswana</option><option value="Brazil">Brazil</option><option value="Brunei">Brunei</option><option value="Bulgaria">Bulgaria</option><option value="Burkina Faso">Burkina Faso</option><option value="Burundi">Burundi</option><option value="Cambodia">Cambodia</option><option value="Cameroon">Cameroon</option><option value="Canada">Canada</option><option value="Cape Verde">Cape Verde</option><option value="Cayman Islands">Cayman Islands</option><option value="Central African Republic">Central African Republic</option><option value="Chad">Chad</option><option value="Chile">Chile</option><option value="China">China</option><option value="Colombia">Colombia</option><option value="Comoros">Comoros</option><option value="Congo, Democratic Republic of the">Congo, Democratic Republic of the</option><option value="Congo, Republic of the">Congo, Republic of the</option><option value="Costa Rica">Costa Rica</option><option value="Côte d\'Ivoire">Côte d\'Ivoire</option><option value="Croatia">Croatia</option><option value="Cuba">Cuba</option><option value="Cyprus">Cyprus</option><option value="Czech Republic">Czech Republic</option><option value="Denmark">Denmark</option><option value="Djibouti">Djibouti</option><option value="Dominica">Dominica</option><option value="Dominican Republic">Dominican Republic</option><option value="East Timor">East Timor</option><option value="Ecuador">Ecuador</option><option value="Egypt">Egypt</option><option value="El Salvador">El Salvador</option><option value="Equatorial Guinea">Equatorial Guinea</option><option value="Eritrea">Eritrea</option><option value="Estonia">Estonia</option><option value="Ethiopia">Ethiopia</option><option value="Faroe Islands">Faroe Islands</option><option value="Fiji">Fiji</option><option value="Finland">Finland</option><option value="France">France</option><option value="French Polynesia">French Polynesia</option><option value="Gabon">Gabon</option><option value="Gambia">Gambia</option><option value="Georgia">Georgia</option><option value="Germany">Germany</option><option value="Ghana">Ghana</option><option value="Greece">Greece</option><option value="Greenland">Greenland</option><option value="Grenada">Grenada</option><option value="Guam">Guam</option><option value="Guatemala">Guatemala</option><option value="Guinea">Guinea</option><option value="Guinea-Bissau">Guinea-Bissau</option><option value="Guyana">Guyana</option><option value="Haiti">Haiti</option><option value="Honduras">Honduras</option><option value="Hong Kong">Hong Kong</option><option value="Hungary">Hungary</option><option value="Iceland">Iceland</option><option value="India">India</option><option value="Indonesia">Indonesia</option><option value="Iran">Iran</option><option value="Iraq">Iraq</option><option value="Ireland">Ireland</option><option value="Israel">Israel</option><option value="Italy">Italy</option><option value="Jamaica">Jamaica</option><option value="Japan">Japan</option><option value="Jordan">Jordan</option><option value="Kazakhstan">Kazakhstan</option><option value="Kenya">Kenya</option><option value="Kiribati">Kiribati</option><option value="North Korea">North Korea</option><option value="South Korea">South Korea</option><option value="Kosovo">Kosovo</option><option value="Kuwait">Kuwait</option><option value="Kyrgyzstan">Kyrgyzstan</option><option value="Laos">Laos</option><option value="Latvia">Latvia</option><option value="Lebanon">Lebanon</option><option value="Lesotho">Lesotho</option><option value="Liberia">Liberia</option><option value="Libya">Libya</option><option value="Liechtenstein">Liechtenstein</option><option value="Lithuania">Lithuania</option><option value="Luxembourg">Luxembourg</option><option value="Macedonia">Macedonia</option><option value="Madagascar">Madagascar</option><option value="Malawi">Malawi</option><option value="Malaysia">Malaysia</option><option value="Maldives">Maldives</option><option value="Mali">Mali</option><option value="Malta">Malta</option><option value="Marshall Islands">Marshall Islands</option><option value="Mauritania">Mauritania</option><option value="Mauritius">Mauritius</option><option value="Mexico">Mexico</option><option value="Micronesia">Micronesia</option><option value="Moldova">Moldova</option><option value="Monaco">Monaco</option><option value="Mongolia">Mongolia</option><option value="Montenegro">Montenegro</option><option value="Morocco">Morocco</option><option value="Mozambique">Mozambique</option><option value="Myanmar">Myanmar</option><option value="Namibia">Namibia</option><option value="Nauru">Nauru</option><option value="Nepal">Nepal</option><option value="Netherlands">Netherlands</option><option value="New Zealand">New Zealand</option><option value="Nicaragua">Nicaragua</option><option value="Niger">Niger</option><option value="Nigeria">Nigeria</option><option value="Northern Mariana Islands">Northern Mariana Islands</option><option value="Norway">Norway</option><option value="Oman">Oman</option><option value="Pakistan">Pakistan</option><option value="Palau">Palau</option><option value="Palestine, State of">Palestine, State of</option><option value="Panama">Panama</option><option value="Papua New Guinea">Papua New Guinea</option><option value="Paraguay">Paraguay</option><option value="Peru">Peru</option><option value="Philippines">Philippines</option><option value="Poland">Poland</option><option value="Portugal">Portugal</option><option value="Puerto Rico">Puerto Rico</option><option value="Qatar">Qatar</option><option value="Romania">Romania</option><option value="Russia">Russia</option><option value="Rwanda">Rwanda</option><option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option><option value="Saint Lucia">Saint Lucia</option><option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option><option value="Samoa">Samoa</option><option value="San Marino">San Marino</option><option value="Sao Tome and Principe">Sao Tome and Principe</option><option value="Saudi Arabia">Saudi Arabia</option><option value="Senegal">Senegal</option><option value="Serbia and Montenegro">Serbia and Montenegro</option><option value="Seychelles">Seychelles</option><option value="Sierra Leone">Sierra Leone</option><option value="Singapore">Singapore</option><option value="Sint Maarten">Sint Maarten</option><option value="Slovakia">Slovakia</option><option value="Slovenia">Slovenia</option><option value="Solomon Islands">Solomon Islands</option><option value="Somalia">Somalia</option><option value="South Africa">South Africa</option><option value="Spain">Spain</option><option value="Sri Lanka">Sri Lanka</option><option value="Sudan">Sudan</option><option value="Sudan, South">Sudan, South</option><option value="Suriname">Suriname</option><option value="Swaziland">Swaziland</option><option value="Sweden">Sweden</option><option value="Switzerland">Switzerland</option><option value="Syria">Syria</option><option value="Taiwan">Taiwan</option><option value="Tajikistan">Tajikistan</option><option value="Tanzania">Tanzania</option><option value="Thailand">Thailand</option><option value="Togo">Togo</option><option value="Tonga">Tonga</option><option value="Trinidad and Tobago">Trinidad and Tobago</option><option value="Tunisia">Tunisia</option><option value="Turkey">Turkey</option><option value="Turkmenistan">Turkmenistan</option><option value="Tuvalu">Tuvalu</option><option value="Uganda">Uganda</option><option value="Ukraine">Ukraine</option><option value="United Arab Emirates">United Arab Emirates</option><option value="United Kingdom">United Kingdom</option><option value="United States" selected="selected">United States</option><option value="Uruguay">Uruguay</option><option value="Uzbekistan">Uzbekistan</option><option value="Vanuatu">Vanuatu</option><option value="Vatican City">Vatican City</option><option value="Venezuela">Venezuela</option><option value="Vietnam">Vietnam</option><option value="Virgin Islands, British">Virgin Islands, British</option><option value="Virgin Islands, U.S.">Virgin Islands, U.S.</option><option value="Yemen">Yemen</option><option value="Zambia">Zambia</option><option value="Zimbabwe">Zimbabwe</option>'.
+            '</select>';
         }
 
         /**
