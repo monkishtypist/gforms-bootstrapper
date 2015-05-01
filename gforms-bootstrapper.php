@@ -48,7 +48,7 @@ if (class_exists("GFForms")) {
         protected $_path = "gforms-bootstrapper/gforms-bootstrapper.php";
         protected $_full_path = __FILE__;
         protected $_title = "GForms Bootstrapper";
-        protected $_short_title = "GF Bootstrapper";
+        protected $_short_title = "Bootstrap Settings";
 
 
         public function pre_init(){
@@ -188,7 +188,6 @@ if (class_exists("GFForms")) {
                  */
                 case 'address':
                     $_input_type = false;
-                    print('<pre>'); print_r($field); print_r($value); print('</pre>');
 
                     $_cols_arr = array( 'col-sm-12', 'col-sm-12', 'col-sm-6', 'col-sm-6', 'col-sm-6', 'col-sm-6' );
 
@@ -423,6 +422,75 @@ if (class_exists("GFForms")) {
                  */
                 case 'list':
                     $_input_type = false;
+                    $_colgroup  = array();
+                    $_thead     = array();
+                    $_tr        = array();
+                    // define choices
+                    $_n = 1;
+                    foreach ($field->choices as $k => $v) {
+                        $_colval = $v['value'];
+                        $_colgroup[] = '<col id="gfield_list table_'.$field->id.'_col_'.$_n.'" class="gfield_list table_col_'.($_n % 2 == 0 ? 'even' : 'odd').'">';
+                        $_thead[] = '<th>'.$v['text'].'</th>';
+                        $_n++;
+                    }
+                    $_colgroup[] = '<col id="gfield_list table_'.$field->id.'_col_'.$_n.'" class="gfield_list table_col_'.($_n % 2 == 0 ? 'even' : 'odd').'">';
+                    
+                    // define value rows/cols
+                    $_m = 1;
+                    $_c = count( $value );
+                    foreach ($value as $k => $v) {
+                        $_m = $_l   = 1;
+                        $_td        = array();
+                        $_tr[ $k ]  = '<tr class="gfield_list table_row_'.($_m % 2 == 0 ? 'even' : 'odd').' gfield_list_row_'.($_m % 2 == 0 ? 'even' : 'odd').'">';
+                        foreach ($v as $w) {
+                            $_td[] = '<td class="gfield_list table_cell table_'.$field->id.'_cell'.$_l.'"><input type="text" name="input_'.$field->id.'[]" value="'.$w.'" class="form-control" /></td>';
+                            $_l++;
+                        }
+                        $_td[] = '<td class="gfield_list table_icons">
+                                <img '.
+                                    'src="'.( ! empty( $field->addIconUrl ) ? $field->addIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                    'class="add_list_item" '.
+                                    'title="Add another row" '.
+                                    'alt="Add a row" '.
+                                    'onclick="gformAddListItem(this, 0)" '.
+                                    'style="cursor:pointer; margin:0 3px;" '.
+                                    '>'.
+                                '<img '.
+                                    'src="'.( ! empty( $field->deleteIconUrl ) ? $field->deleteIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                    'title="Remove this row" '.
+                                    'alt="Remove this row" '.
+                                    'class="delete_list_item" '.
+                                    'style="cursor: pointer; '.($_c == 1 ? 'visibility: hidden;' : '').'" '.
+                                    'onclick="gformDeleteListItem(this, 0)" '.
+                                    '>'.
+                            '</td>';
+                        $_tr[ $k ] .= implode( "\n", $_td );
+                        $_tr[ $k ] .= '</tr>';
+                        $_m++;
+                    }
+                    $input = '<input type="text" id="input_'.$field->formId.'_'.$field->id.'_shim" style="position:absolute;left:-999em;" onfocus="jQuery( &quot;#field_'.$field->formId.'_'.$field->id.' table tr td:first-child input&quot; ).focus();">'.
+                        '<table class="gfield_list table">'.
+                            '<colgroup>'.
+                                implode( "\n", $_colgroup ).
+                            '</colgroup>'.
+                            '<thead>'.
+                                '<tr>'.
+                                    implode( "\n", $_thead ).
+                                    '<th>&nbsp;</th>'.
+                                '</tr>'.
+                            '</thead>'.
+                            '<tbody>'.
+                                implode( "\n", $_tr ).
+                            '</tbody>'.
+                            '<style type="text/css">'.
+                            '/* add SVG background image support for retina devices -------------------------------*/'.
+                            'img.add_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgNTEyYy0xNDEuMzc1IDAtMjU2LTExNC42MDktMjU2LTI1NnMxMTQuNjI1LTI1NiAyNTYtMjU2YzE0MS4zOTEgMCAyNTYgMTE0LjYwOSAyNTYgMjU2cy0xMTQuNjA5IDI1Ni0yNTYgMjU2ek0yNTYgNjRjLTEwNi4wMzEgMC0xOTIgODUuOTY5LTE5MiAxOTJzODUuOTY5IDE5MiAxOTIgMTkyYzEwNi4wNDcgMCAxOTItODUuOTY5IDE5Mi0xOTJzLTg1Ljk1My0xOTItMTkyLTE5MnpNMjg4IDM4NGgtNjR2LTk2aC05NnYtNjRoOTZ2LTk2aDY0djk2aDk2djY0aC05NnY5NnoiPjwvcGF0aD48L3N2Zz4=);}'.
+                            'img.delete_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgMGMtMTQxLjM3NSAwLTI1NiAxMTQuNjI1LTI1NiAyNTYgMCAxNDEuMzkxIDExNC42MjUgMjU2IDI1NiAyNTYgMTQxLjM5MSAwIDI1Ni0xMTQuNjA5IDI1Ni0yNTYgMC0xNDEuMzc1LTExNC42MDktMjU2LTI1Ni0yNTZ6TTI1NiA0NDhjLTEwNi4wMzEgMC0xOTItODUuOTY5LTE5Mi0xOTJzODUuOTY5LTE5MiAxOTItMTkyYzEwNi4wNDcgMCAxOTIgODUuOTY5IDE5MiAxOTJzLTg1Ljk1MyAxOTItMTkyIDE5MnpNMTI4IDI4OGgyNTZ2LTY0aC0yNTZ2NjR6Ij48L3BhdGg+PC9zdmc+);}'.
+                            'img.add_list_item,'.
+                            'img.delete_list_item {width: 1em;height: 1em;background-size: 1em 1em;opacity: 0.5;}'.
+                            'img.add_list_item:hover,img.add_list_item:active,img.delete_list_item:hover,img.delete_list_item:active {opacity: 1.0;}'.
+                            '</style>'.
+                        '</table>';
                     break;
                 
                 /**
@@ -800,9 +868,6 @@ if (class_exists("GFForms")) {
             $form_string = str_replace( '</ul>', '</div>', $form_string );
             $form_string = str_replace( '<li ', '<div ', $form_string );
             $form_string = str_replace( '</li>', '</div>', $form_string );
-            // set footer as form group
-            $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align , $form_string );
-            
             // set body as form group, fix for inline forms
             if ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) {
                 $form_string = str_replace( 'gform_body', 'gform-body row', $form_string );
@@ -811,8 +876,9 @@ if (class_exists("GFForms")) {
             if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'inline' ) {
                 $form_string = str_replace( 'gform_body', 'gform_body form-group', $form_string );
             }
-
-            
+            // set footer as form group
+            $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align , $form_string );
+            // column fixes
             $form_string = str_replace( 'gf_left_half', 'gf_left_half col-sm-6 pull-left', $form_string );
             $form_string = str_replace( 'gf_right_half', 'gf_right_half col-sm-6 pull-right', $form_string );
             return $form_string;
