@@ -83,3 +83,11 @@
 div.copy_values_option_container.checkbox {
 	margin-bottom: 10px;
 }
+
+/* File upload fixes */
+.gform_drop_area {
+	border: 2px dashed lightgray;
+	border-radius: 6px;
+	padding: 20px;
+	text-align: center;
+}
