@@ -43,7 +43,7 @@ if (class_exists("GFForms")) {
     class GFBootstrapper extends GFAddOn {
 
         protected $_version = "1.0";
-        protected $_min_gravityforms_version = "1.7.9999";
+        protected $_min_gravityforms_version = "1.8.9999";
         protected $_slug = "gforms-bootstrapper";
         protected $_path = "gforms-bootstrapper/gforms-bootstrapper.php";
         protected $_full_path = __FILE__;
@@ -72,6 +72,7 @@ if (class_exists("GFForms")) {
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
             add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
+            add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_scripts'), 10 );
             add_filter( 'gform_field_css_class', array($this, 'bootstrap_css_classes'), 10, 3);
             add_filter( 'gform_field_content', array($this, 'bootstrap_field_content'), 10, 5 );
             add_filter( 'gform_field_input' , array($this, 'bootstrap_field_input'), 10, 5 );
@@ -92,6 +93,8 @@ if (class_exists("GFForms")) {
          */
         public function bootstrap_form_tag($form_tag, $form){
             $settings = $this->get_form_settings($form);
+            $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
+            $col_l = 12 - $col_r;
             if ( ! isset($settings['formlayout']) || $settings['formlayout'] == 'basic' ) {
                 $form_tag = str_replace( '<form ', '<form class="form-basic form-bootstrapped" ', $form_tag );
             }
@@ -99,7 +102,7 @@ if (class_exists("GFForms")) {
                 $form_tag = str_replace( '<form ', '<form class="form-inline form-bootstrapped" ', $form_tag );
             }
             else if ( $settings['formlayout'] == 'horizontal' ) {
-                $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped" ', $form_tag );
+                $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped" lcol="'.$col_l.'" rcol="'.$col_r.'" ', $form_tag );
             }
             return $form_tag;
         }
@@ -406,12 +409,15 @@ if (class_exists("GFForms")) {
                  * @return string
                  */
                 case 'fileupload':
-                    // Complete for single file upload. Still needs work for multi-file uploads
                     $max_upload = (int)(ini_get('upload_max_filesize'));
                     $maxFileSize = $field->maxFileSize * 1024 * 1024;
                     if ( $field->multipleFiles != 1 ) {
                         $input_before = '<input type="hidden" name="MAX_FILE_SIZE" value="' . min($max_upload, $maxFileSize) . '">';
                         $input_array['type'] = 'file';
+                    }
+                    else {
+                        $_input_type = false;
+                        // fixes for multi-file upload field through CSS and JS
                     }
                     break;
                 
@@ -813,27 +819,36 @@ if (class_exists("GFForms")) {
             $col_l = 12 - $col_r;
             $offset = ( in_array( $field['cssClass'], array( 'tsbplaceholder', 'gf-add-placeholder' ) ) ? 'col-sm-offset-'.$col_l : '' );
 
-
+            // Basic / Default Forms:
             if ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) {
                 //$content = str_replace( '<div ', '<span ', $content );
                 //$content = str_replace( '</div>', '</span>', $content );
             }
-            else if ( $settings['formlayout'] == 'inline' ) {
+
+            // Inline Forms:
+            if ( $settings['formlayout'] == 'inline' ) {
                 $content = str_replace( '<div ', '<span ', $content );
                 $content = str_replace( '</div>', '</span>', $content );
             }
-            else if ( $settings['formlayout'] == 'horizontal' ) {
+
+            // Horizontal Forms:
+            if ( $settings['formlayout'] == 'horizontal' ) {
                 $content = str_replace( 'ginput_container', 'col-sm-'.$col_r.' ginput_container ' . $offset, $content );
                 $content = str_replace( 'gfield_label', 'gfield_label col-sm-'.$col_l, $content );
                 $content = str_replace( 'gfield_description', 'gfield_description col-sm-'.$col_r.' ' . $offset, $content );
-                $content = str_replace( 'validation_message', 'validation_message col-sm-offset-' . $col_l . ' ', $content );
+                $content = str_replace( 'validation_message', 'validation_message col-sm-offset-'.$col_l.' ', $content );
+                $content = str_replace( 'id="gform_preview_', 'class="col-sm-'.$col_r.' col-sm-offset-'.$col_l.'" id="gform_preview_', $content ); // File Upload fixes
             }
-            else {
+            else { // Non-Horizontal forms:
+                $content = str_replace( 'id="gform_preview_', 'class="col-sm-12" id="gform_preview_', $content ); // File Upload fixes
             }
+
+            // All Forms:
+            $content = str_replace( 'gform_button_select_files', 'gform_button_select_files btn btn-default ', $content ); // File Upload fixes
             $content = str_replace( 'gfield_label', 'control-label gfield_label', $content );
             $content = str_replace( 'gfield_description', 'help-block gfield_description', $content );
             $content = str_replace( 'small', 'small input-sm', $content );
-            $content = str_replace( 'medium', 'medium', $content );
+            $content = str_replace( 'medium', 'medium input-md', $content );
             $content = str_replace( 'large', 'large input-lg', $content );
             
             return $content;
@@ -1000,6 +1015,25 @@ if (class_exists("GFForms")) {
                     )
                 )
             );
+        }
+
+        /**
+         *  Plugin Scripts
+         *
+         *  Call scripts that we may want to run on form pages
+         *
+         **/
+        public function bootstrapper_scripts() {
+
+            $script = array(
+                "handle"    => "gforms_bootstrapper_js",
+                "src"       => $this->get_base_url() . "/js/gforms_bootstrapper_js.js",
+                "deps"      => 'jquery',
+                "ver"       => $this->_version,
+                "in_footer" => true,
+            );
+
+            wp_enqueue_script( $script['handle'], $script['src'], $script['deps'], $script['ver'], $script['in_footer'] );
         }
 
         /**
