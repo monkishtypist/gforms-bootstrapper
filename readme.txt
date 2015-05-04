@@ -1,4 +1,13 @@
-# GForms Bootstrapper
+=== Gravity Forms Bootstrapper ===
+Contributors: monkishtypist
+Donate link: http://monkishtypist.com/
+Tags: Gravity Forms, Bootstrap
+Requires at least: 3.0.1
+Tested up to: 4.2.1
+Stable tag: 4.3
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
 Add Bootstrap CSS classes to Gravity Forms, and update forms with Bootstrap supported layouts.
 
 == Description ==
@@ -26,3 +35,18 @@ Do not loose any built in Gravity forms features:
 Activating plugin automatically rewrites all forms with Bootstrap.
 
 To customize settings for each form go to `All Forms > Form Settings > Bootstrap Settings`
+
+== Frequently Asked Questions ==
+
+= A question that someone might have =
+
+An answer to that question.
+
+= What about foo bar? =
+
+Answer to foo bar dilemma.
+
+== Changelog ==
+
+= 0.1.0 =
+* Initial Beta release
