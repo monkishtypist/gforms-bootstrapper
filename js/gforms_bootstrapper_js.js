@@ -4,8 +4,9 @@
 	 * File Uploads - Multiple files
 	 * Fix for Horizontal layout to move uploaded files to right col offset
 	 */
-	$("form").each(function(){
-		var formId	= $(this).attr("id").split("_").pop(),
+	$("form.form-bootstrapped").each(function(){
+		var form 	= $(this).attr("id"),
+			formId	= form.substr(form.indexOf("_") + 1), // $(this).attr("id").split("_").pop(),
 			div		= $(this).find('div[id^="gform_preview_'+formId+'_"]'),
 			lcol	= $(this).attr('lcol'),
 			rcol	= $(this).attr('rcol');
