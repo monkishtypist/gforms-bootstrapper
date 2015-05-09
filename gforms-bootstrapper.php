@@ -826,13 +826,13 @@ if (class_exists("GFForms")) {
             }
 
             // Inline Forms:
-            if ( $settings['formlayout'] == 'inline' ) {
+            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'inline' ) {
                 $content = str_replace( '<div ', '<span ', $content );
                 $content = str_replace( '</div>', '</span>', $content );
             }
 
             // Horizontal Forms:
-            if ( $settings['formlayout'] == 'horizontal' ) {
+            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
                 $content = str_replace( 'ginput_container', 'col-sm-'.$col_r.' ginput_container ' . $offset, $content );
                 $content = str_replace( 'gfield_label', 'gfield_label col-sm-'.$col_l, $content );
                 $content = str_replace( 'gfield_description', 'gfield_description col-sm-'.$col_r.' ' . $offset, $content );
