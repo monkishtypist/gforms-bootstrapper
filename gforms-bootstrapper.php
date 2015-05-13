@@ -893,9 +893,13 @@ if (class_exists("GFForms")) {
             }
             // set footer as form group
             $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align , $form_string );
-            // column fixes
+            // column fixes - two col
             $form_string = str_replace( 'gf_left_half', 'gf_left_half col-sm-6 pull-left', $form_string );
             $form_string = str_replace( 'gf_right_half', 'gf_right_half col-sm-6 pull-right', $form_string );
+            // column fixes - three col
+            $form_string = str_replace( 'gf_left_third', 'gf_left_third col-sm-4 pull-left', $form_string );
+            $form_string = str_replace( 'gf_middle_third', 'gf_middle_third col-sm-4', $form_string );
+            $form_string = str_replace( 'gf_right_third', 'gf_right_third col-sm-4 pull-right', $form_string );
             return $form_string;
         }
 
