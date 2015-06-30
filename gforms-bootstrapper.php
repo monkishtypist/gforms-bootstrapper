@@ -66,6 +66,14 @@ if (class_exists("GFForms")) {
         public function init_admin(){
             parent::init_admin();
             // add tasks or filters here that you want to perform only in admin
+            add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_submit_button_size'), 10, 2 );
+            add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_submit_button_size') );
+            add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_submit_button_alignment'), 10, 2 );
+            add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_submit_button_alignment') );
+            add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_form_layout'), 10, 2 );
+            add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_form_layout') );
+            add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_form_columns'), 10, 2 );
+            add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_form_columns') );
         }
 
         public function init_frontend(){
@@ -93,15 +101,15 @@ if (class_exists("GFForms")) {
          */
         public function bootstrap_form_tag($form_tag, $form){
             $settings = $this->get_form_settings($form);
-            $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
+            $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
             $col_l = 12 - $col_r;
-            if ( ! isset($settings['formlayout']) || $settings['formlayout'] == 'basic' ) {
+            if ( ! isset($form['bootstrap_form_layout']) || $form['bootstrap_form_layout'] == 'basic' ) {
                 $form_tag = str_replace( '<form ', '<form class="form-basic form-bootstrapped" ', $form_tag );
             }
-            else if ( $settings['formlayout'] == 'inline' ) {
+            else if ( $form['bootstrap_form_layout'] == 'inline' ) {
                 $form_tag = str_replace( '<form ', '<form class="form-inline form-bootstrapped" ', $form_tag );
             }
-            else if ( $settings['formlayout'] == 'horizontal' ) {
+            else if ( $form['bootstrap_form_layout'] == 'horizontal' ) {
                 $form_tag = str_replace( '<form ', '<form class="form-horizontal form-bootstrapped" lcol="'.$col_l.'" rcol="'.$col_r.'" ', $form_tag );
             }
             return $form_tag;
@@ -115,7 +123,7 @@ if (class_exists("GFForms")) {
          */
         public function bootstrap_submit_button( $button, $form ) {
             $settings = $this->get_form_settings($form);
-            $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
+            $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
             $col_l = 12 - $col_r;
             $classes = 'btn btn-primary ';
             if ( isset($settings['btnsize']) ) {
@@ -127,7 +135,7 @@ if (class_exists("GFForms")) {
             $button = str_replace( 'gform_button', $classes, $button );
             $button = str_replace( '>', 'data-loading-text="Processing..." >', $button );
             
-            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
+            if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'horizontal' ) {
                 $button = '<div class="col-sm-offset-'.$col_l.' col-sm-'.$col_r.'">' . $button . '</div>';
             }
             return $button;
@@ -147,7 +155,7 @@ if (class_exists("GFForms")) {
             $has_error = ( $field['failed_validation'] == 1 ? 'has-error' : '' );
             $size = ( isset($settings['btnsize']) ? $settings['btnsize'] : '' );
             $classes .= " form-group " . $has_error;
-            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
+            if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'horizontal' ) {
                 if ( $size == 'large' )
                     $classes .= " form-group-lg";
                 if ( $size == 'small' )
@@ -166,9 +174,9 @@ if (class_exists("GFForms")) {
             $form = GFAPI::get_form($form_id);
             $settings = $this->get_form_settings($form);
             $layout = 'basic';
-            if ( isset( $settings['formlayout'] ) )
-                $layout = $settings['formlayout'];
-            $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
+            if ( isset( $form['bootstrap_form_layout'] ) )
+                $layout = $form['bootstrap_form_layout'];
+            $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
 
             $_input_type = 'default';
             $input_before = '';
@@ -815,24 +823,24 @@ if (class_exists("GFForms")) {
         public function bootstrap_field_content( $content, $field, $value, $lead_id, $form_id ) {
             $form = GFAPI::get_form($form_id);
             $settings = $this->get_form_settings($form);
-            $col_r = ( isset($settings['colwidth']) ? $settings['colwidth'] : 10 );
+            $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
             $col_l = 12 - $col_r;
             $offset = ( in_array( $field['cssClass'], array( 'tsbplaceholder', 'gf-add-placeholder' ) ) ? 'col-sm-offset-'.$col_l : '' );
 
             // Basic / Default Forms:
-            if ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) {
+            if ( ! isset( $form['bootstrap_form_layout'] ) || $form['bootstrap_form_layout'] == 'basic' ) {
                 //$content = str_replace( '<div ', '<span ', $content );
                 //$content = str_replace( '</div>', '</span>', $content );
             }
 
             // Inline Forms:
-            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'inline' ) {
+            if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'inline' ) {
                 $content = str_replace( '<div ', '<span ', $content );
                 $content = str_replace( '</div>', '</span>', $content );
             }
 
             // Horizontal Forms:
-            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'horizontal' ) {
+            if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'horizontal' ) {
                 $content = str_replace( 'ginput_container', 'col-sm-'.$col_r.' ginput_container ' . $offset, $content );
                 $content = str_replace( 'gfield_label', 'gfield_label col-sm-'.$col_l, $content );
                 $content = str_replace( 'gfield_description', 'gfield_description col-sm-'.$col_r.' ' . $offset, $content );
@@ -861,7 +869,7 @@ if (class_exists("GFForms")) {
          */
         public function bootstrap_gravity_form_filter( $form_string, $form ) {
             $settings = $this->get_form_settings($form);
-            $btnalign = ( isset( $settings['btnalign'] ) && ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) ) ? $settings['btnalign'] : 'default';
+            $btnalign = ( isset( $form['button']['bootstrap_submit_alignment'] ) && ( ! isset( $form['bootstrap_form_layout'] ) || $form['bootstrap_form_layout'] == 'basic' ) ) ? $form['button']['bootstrap_submit_alignment'] : 'default';
             $align = '';
             switch ($btnalign) {
                 case 'center':
@@ -884,15 +892,15 @@ if (class_exists("GFForms")) {
             $form_string = str_replace( '<li ', '<div ', $form_string );
             $form_string = str_replace( '</li>', '</div>', $form_string );
             // set body as form group, fix for inline forms
-            if ( ! isset( $settings['formlayout'] ) || $settings['formlayout'] == 'basic' ) {
+            if ( ! isset( $form['bootstrap_form_layout'] ) || $form['bootstrap_form_layout'] == 'basic' ) {
                 $form_string = str_replace( 'gform_body', 'gform-body row', $form_string );
                 $form_string = str_replace( 'gfield ', 'gfield col-xs-12 ', $form_string );
             }
-            if ( isset( $settings['formlayout'] ) && $settings['formlayout'] == 'inline' ) {
+            if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'inline' ) {
                 $form_string = str_replace( 'gform_body', 'gform_body form-group', $form_string );
             }
             // set footer as form group
-            $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align , $form_string );
+            $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align, $form_string );
             // column fixes - two col
             $form_string = str_replace( 'gf_left_half', 'gf_left_half col-sm-6 pull-left', $form_string );
             $form_string = str_replace( 'gf_right_half', 'gf_right_half col-sm-6 pull-right', $form_string );
@@ -918,107 +926,78 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         * Settings Page to Bootstrapify each Form
+         * New Bootstrap Form Settings
          *
          */
-        public function form_settings_fields($form) {
-            return array(
-                array(
-                    "title"  => "Bootstrapper Form Settings",
-                    "fields" => array(
-                        array(
-                            "label"   => "Form layout",
-                            "type"    => "select",
-                            "name"    => "formlayout",
-                            "default_value" => "basic",
-                            "choices" => array(
-                                array(
-                                    "label" => "Basic form",
-                                    "value" => "basic"
-                                ),
-                                array(
-                                    "label" => "Inline form",
-                                    "value" => "inline"
-                                ),
-                                array(
-                                    "label" => "Horizontal form",
-                                    "value" => "horizontal"
-                                )
-                            ),
-                        ),
-                        array(
-                            "label"   => "Horizontal Column Widths",
-                            "type"    => "select",
-                            "name"    => "colwidth",
-                            "tooltip" => "Sets width of label (left) and field (right) columns as a ratio. Only applies to horizontal form layout.",
-                            "dependency" => array( 'field' => 'formlayout', 'values' => array( 'horizontal' ) ),
-                            "choices" => array(
-                                array(
-                                    "label" => "2 - 10",
-                                    "value" => "10"
-                                ),
-                                array(
-                                    "label" => "3 - 9",
-                                    "value" => "9"
-                                ),
-                                array(
-                                    "label" => "4 - 8",
-                                    "value" => "8"
-                                ),
-                                array(
-                                    "label" => "6 - 6",
-                                    "value" => "6"
-                                )
-                            )
-                        ),
-                        array(
-                            "label"   => "Submit Button Size",
-                            "type"    => "select",
-                            "name"    => "btnsize",
-                            //"tooltip" => "Controls input field sizing",
-                            "choices" => array(
-                                array(
-                                    "label" => "Default",
-                                    "value" => "default"
-                                ),
-                                array(
-                                    "label" => "Large",
-                                    "value" => "large"
-                                ),
-                                array(
-                                    "label" => "Small",
-                                    "value" => "small"
-                                )
-                            )
-                        ),
-                        array(
-                            "label"   => "Submit Button Alignment",
-                            "type"    => "select",
-                            "name"    => "btnalign",
-                            "tooltip" => "Adds Bootstrap alignment class to Gravity Form footer",
-                            "dependency" => array( 'field' => 'formlayout', 'values' => array( 'basic' ) ),
-                            "choices" => array(
-                                array(
-                                    "label" => "Default",
-                                    "value" => "default"
-                                ),
-                                array(
-                                    "label" => "Left",
-                                    "value" => "left"
-                                ),
-                                array(
-                                    "label" => "Center",
-                                    "value" => "center"
-                                ),
-                                array(
-                                    "label" => "Right",
-                                    "value" => "right"
-                                )
-                            )
-                        ),
-                    )
-                )
-            );
+        function bootstrap_setting_form_layout( $settings, $form ) {
+            $settings['Form Layout']['bootstrap_form_layout'] = '
+                <tr>
+                    <th><label for="bootstrap_form_layout">Bootstrap Layout <a href="#" onclick="return false;" class="gf_tooltip tooltip" title="<h6>Bootstrap Layout</h6>Choose between three available Bootstrap form layouts. Inline recommended for simple forms only."><i class="fa fa-question-circle"></i></a></label></th>
+                    <td><select name="bootstrap_form_layout">
+                        <option value="basic" ' . ( isset($form['bootstrap_form_layout']) && $form['bootstrap_form_layout'] == 'basic' ? 'selected="selected"' : '' ) . '">Basic</option>
+                        <option value="inline" ' . ( isset($form['bootstrap_form_layout']) && $form['bootstrap_form_layout'] == 'inline' ? 'selected="selected"' : '' ) . '">Inline</option>
+                        <option value="horizontal" ' . ( isset($form['bootstrap_form_layout']) && $form['bootstrap_form_layout'] == 'horizontal' ? 'selected="selected"' : '' ) . '">Horizontal</option>
+                        </select>
+                    </td>
+                </tr>';
+            return $settings;
+        }
+        function bootstrap_setting_form_columns( $settings, $form ) {
+            $settings['Form Layout']['bootstrap_form_columns'] = '
+                <tr>
+                    <th><label for="bootstrap_form_columns">Bootstrap Column Widths <a href="#" onclick="return false;" class="gf_tooltip tooltip" title="<h6>Bootstrap Column Widths</h6>Set left and right column widths in twelfths. Only applies to horizontal form layout."><i class="fa fa-question-circle"></i></a></label></th>
+                    <td><select name="bootstrap_form_columns">
+                        <option value="10" ' . ( isset($form['bootstrap_form_columns']) && $form['bootstrap_form_columns'] == '10' ? 'selected="selected"' : '' ) . '">2 - 10 (default)</option>
+                        <option value="9" ' . ( isset($form['bootstrap_form_columns']) && $form['bootstrap_form_columns'] == '9' ? 'selected="selected"' : '' ) . '">3 - 9</option>
+                        <option value="8" ' . ( isset($form['bootstrap_form_columns']) && $form['bootstrap_form_columns'] == '8' ? 'selected="selected"' : '' ) . '">4 - 8</option>
+                        <option value="6" ' . ( isset($form['bootstrap_form_columns']) && $form['bootstrap_form_columns'] == '6' ? 'selected="selected"' : '' ) . '">6 - 6</option>
+                        </select>
+                    </td>
+                </tr>';
+            return $settings;
+        }
+        function bootstrap_setting_submit_button_size( $settings, $form ) {
+            $settings['Form Button']['bootstrap_submit_size'] = '
+                <tr>
+                    <th><label for="bootstrap_submit_size">Bootstrap Button Size <a href="#" onclick="return false;" class="gf_tooltip tooltip" title="<h6>Submit Button Size</h6>Adds bootstrap class to submit button for either regular, large, or small buttons."><i class="fa fa-question-circle"></i></a></label></th>
+                    <td><select name="bootstrap_submit_size">
+                        <option value="default" ' . ( isset($form['button']['bootstrap_submit_size']) && $form['button']['bootstrap_submit_size'] == 'default' ? 'selected="selected"' : '' ) . '">Default</option>
+                        <option value="large" ' . ( isset($form['button']['bootstrap_submit_size']) && $form['button']['bootstrap_submit_size'] == 'large' ? 'selected="selected"' : '' ) . '">Large</option>
+                        <option value="small" ' . ( isset($form['button']['bootstrap_submit_size']) && $form['button']['bootstrap_submit_size'] == 'small' ? 'selected="selected"' : '' ) . '">Small</option>
+                        </select>
+                    </td>
+                </tr>';
+            return $settings;
+        }
+        function bootstrap_setting_submit_button_alignment( $settings, $form ) {
+            $settings['Form Button']['bootstrap_submit_alignment'] = '
+                <tr>
+                    <th><label for="bootstrap_submit_alignment">Button Alignment <a href="#" onclick="return false;" class="gf_tooltip tooltip" title="<h6>Submit Button Alignment</h6>Left, right, or center align the Submit button. Only applies to Basic form layout."><i class="fa fa-question-circle"></i></a></label></th>
+                    <td><select name="bootstrap_submit_alignment">
+                        <option value="default" ' . ( isset($form['button']['bootstrap_submit_alignment']) && $form['button']['bootstrap_submit_alignment'] == 'default' ? 'selected="selected"' : '' ) . '">Default</option>
+                        <option value="left" ' . ( isset($form['button']['bootstrap_submit_alignment']) && $form['button']['bootstrap_submit_alignment'] == 'left' ? 'selected="selected"' : '' ) . '">Left</option>
+                        <option value="center" ' . ( isset($form['button']['bootstrap_submit_alignment']) && $form['button']['bootstrap_submit_alignment'] == 'center' ? 'selected="selected"' : '' ) . '">Center</option>
+                        <option value="right" ' . ( isset($form['button']['bootstrap_submit_alignment']) && $form['button']['bootstrap_submit_alignment'] == 'right' ? 'selected="selected"' : '' ) . '">Right</option>
+                        </select>
+                    </td>
+                </tr>';
+            return $settings;
+        }
+        function save_bootstrap_setting_form_layout($form) {
+            $form['bootstrap_form_layout'] = rgpost( 'bootstrap_form_layout' );
+            return $form;
+        }
+        function save_bootstrap_setting_form_columns($form) {
+            $form['bootstrap_form_columns'] = rgpost( 'bootstrap_form_columns' );
+            return $form;
+        }
+        function save_bootstrap_setting_submit_button_size($form) {
+            $form['button']['bootstrap_submit_size'] = rgpost( 'bootstrap_submit_size' );
+            return $form;
+        }
+        function save_bootstrap_setting_submit_button_alignment($form) {
+            $form['button']['bootstrap_submit_alignment'] = rgpost( 'bootstrap_submit_alignment' );
+            return $form;
         }
 
         /**
