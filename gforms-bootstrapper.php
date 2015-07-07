@@ -66,6 +66,8 @@ if (class_exists("GFForms")) {
         public function init_admin(){
             parent::init_admin();
             // add tasks or filters here that you want to perform only in admin
+            add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_submit_button_classes'), 10, 2 );
+            add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_submit_button_classes') );
             add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_submit_button_size'), 10, 2 );
             add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_submit_button_size') );
             add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_submit_button_alignment'), 10, 2 );
@@ -126,11 +128,12 @@ if (class_exists("GFForms")) {
             $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
             $col_l = 12 - $col_r;
             $classes = 'btn btn-primary ';
+            $classes .= isset( $form['button']['bootstrap_submit_classes'] ) ? $form['button']['bootstrap_submit_classes'] : '';
             if ( isset($settings['btnsize']) ) {
                 if ( $settings['btnsize'] == 'large' )
-                    $classes .= 'btn-lg';
+                    $classes .= ' btn-lg ';
                 if ( $settings['btnsize'] == 'small' )
-                    $classes .= 'btn-sm';
+                    $classes .= ' btn-sm ';
             }
             $button = str_replace( 'gform_button', $classes, $button );
             $button = str_replace( '>', 'data-loading-text="Processing..." >', $button );
@@ -956,6 +959,14 @@ if (class_exists("GFForms")) {
                 </tr>';
             return $settings;
         }
+        function bootstrap_setting_submit_button_classes( $settings, $form ) {
+            $settings['Form Button']['bootstrap_submit_classes'] = '
+                <tr>
+                    <th><label for="bootstrap_submit_classes">Button Class <a href="#" onclick="return false;" class="gf_tooltip tooltip" title="<h6>Submit Button Classes</h6>Add additional CSS classes to the submit button."><i class="fa fa-question-circle"></i></a></label></th>
+                    <td><input type="text" name="bootstrap_submit_classes" value="' . ( isset($form['button']['bootstrap_submit_classes']) && ! empty( $form['button']['bootstrap_submit_classes'] ) ? $form['button']['bootstrap_submit_classes'] : '' ) . '" /></td>
+                </tr>';
+            return $settings;
+        }
         function bootstrap_setting_submit_button_size( $settings, $form ) {
             $settings['Form Button']['bootstrap_submit_size'] = '
                 <tr>
@@ -989,6 +1000,10 @@ if (class_exists("GFForms")) {
         }
         function save_bootstrap_setting_form_columns($form) {
             $form['bootstrap_form_columns'] = rgpost( 'bootstrap_form_columns' );
+            return $form;
+        }
+        function save_bootstrap_setting_submit_button_classes($form) {
+            $form['button']['bootstrap_submit_classes'] = rgpost( 'bootstrap_submit_classes' );
             return $form;
         }
         function save_bootstrap_setting_submit_button_size($form) {
