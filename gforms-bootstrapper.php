@@ -279,7 +279,12 @@ if (class_exists("GFForms")) {
                         '<div '.
                         'id="input_' . $field->formId . '_' . $field->id . '" '.
                         'class="ginput_complex" '.
-                        ( ( isset( $value[ $field->id . '_copy_values_activated' ] ) && $value[ $field->id . '_copy_values_activated' ] == 1 ) || ( ! isset( $value[ $field->id . '_copy_values_activated' ] ) && $field->copyValuesOptionDefault == 1 ) ? 'style="display: none;" ' : '' ).
+                        ( 
+                            ( isset( $value[ $field->id . '_copy_values_activated' ] ) && $value[ $field->id . '_copy_values_activated' ] == 1 ) 
+                            || ( ! isset( $value[ $field->id . '_copy_values_activated' ] ) && $field->copyValuesOptionDefault == 1 ) 
+                                ? 'style="display: none;" ' 
+                                : '' 
+                        ).
                         '>'.
                         implode('', $input_this).
                         '</div></div>';
@@ -292,7 +297,6 @@ if (class_exists("GFForms")) {
                  * @return string
                  */                
                 case 'checkbox':
-
                     $_input_type = false;
                     $input_this = array();
                     foreach ($field->choices as $k => $v) {
@@ -303,7 +307,13 @@ if (class_exists("GFForms")) {
                                         'type="checkbox" '.
                                         'value="' . $v['value'] . '" '.
                                         'id="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" '.
-                                        ( ( ! empty( $value[ (string) $v['id'] ] ) && $v['value'] == $value[ (string) $v['id'] ] ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ) . '>'.
+                                        ( 
+                                            ( ! empty( $value[ (string) $field->inputs[ $k ]['id'] ] ) && $v['value'] == $value[ (string) $field->inputs[ $k ]['id'] ] ) 
+                                                ? 'checked="checked"' 
+                                                : ( empty( $value ) && isset( $v['isSelected'] ) && $v['isSelected'] == 1 
+                                                    ? 'checked="checked"' 
+                                                    : '' ) 
+                                        ) . '>'.
                                     $v['text'].
                                 '</label>'.
                             '</div>';
