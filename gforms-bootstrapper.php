@@ -265,6 +265,7 @@ if (class_exists("GFForms")) {
                                 $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_input . $_this_label . '</div>';
                                 break;
                             case 'hidden':
+                            case 'hidden_label':
                                 $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_input . '</div>';
                                 break;
                             case 'above':
