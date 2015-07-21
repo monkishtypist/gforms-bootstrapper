@@ -34,7 +34,7 @@
 .gform_wrapper .form-basic.form-bootstrapped input.small,
 .gform_wrapper .form-basic.form-bootstrapped select.small,
 .gform_wrapper .form-basic.form-bootstrapped textarea.small {
-	width: 100%;
+	width: 100% !important;
 }
 .gform_wrapper .form-inline.form-bootstrapped input.large,
 .gform_wrapper .form-inline.form-bootstrapped select.large,
@@ -45,7 +45,7 @@
 .gform_wrapper .form-inline.form-bootstrapped input.small,
 .gform_wrapper .form-inline.form-bootstrapped select.small,
 .gform_wrapper .form-inline.form-bootstrapped textarea.small {
-	width: auto;
+	width: auto !important;
 }
 .gform_wrapper .form-horizontal.form-bootstrapped input.large,
 .gform_wrapper .form-horizontal.form-bootstrapped select.large,
@@ -56,7 +56,7 @@
 .gform_wrapper .form-horizontal.form-bootstrapped input.small,
 .gform_wrapper .form-horizontal.form-bootstrapped select.small,
 .gform_wrapper .form-horizontal.form-bootstrapped textarea.small {
-	width: 100%;
+	width: 100% !important;
 }
 
 .hidden_label > .gfield_label {
