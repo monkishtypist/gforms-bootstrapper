@@ -59,6 +59,10 @@
 	width: 100%;
 }
 
+.hidden_label > .gfield_label {
+	display: none;
+}
+
 /* Datepicker fixes */
 .gform_wrapper .datepicker + .input-group-addon {
 	min-width: 42px;
