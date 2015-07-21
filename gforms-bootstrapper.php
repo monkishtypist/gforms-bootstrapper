@@ -76,6 +76,7 @@ if (class_exists("GFForms")) {
             add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_form_layout') );
             add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_form_columns'), 10, 2 );
             add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_form_columns') );
+            add_filter( 'gform_enable_field_label_visibility_settings', '__return_true' ); // Add "hidden" option for Sub-Label placement
         }
 
         public function init_frontend(){
@@ -228,6 +229,10 @@ if (class_exists("GFForms")) {
 
                         $_input_id = explode( '.', $v['id'] );
 
+                        if ( isset( $v['isHidden'] ) && $v['isHidden'] == 1 ) {
+                            $_cols_arr[ $k ] = 'hidden';
+                        }
+
                         $_this_label = ( ( ! isset( $v['isHidden'] ) || $v['isHidden'] != 1 ) ? '<label '.
                                 'for="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" '.
                                 'id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '_label">'.
@@ -255,7 +260,18 @@ if (class_exists("GFForms")) {
                                     'value="' . ( ! empty( $value[ (string) $v['id'] ] ) ? $value[ (string) $v['id'] ] : ( isset( $v['defaultValue'] ) ? $v['defaultValue'] : ( $v['label'] == 'ZIP / Postal Code' ? $field->defaultState : '' ) ) ) . '" '.
                                     'placeholder="' . ( isset( $v['placeholder'] ) ? $v['placeholder'] : '' ) . '" />';
                         }
-                        $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . ( $field->subLabelPlacement == 'above' ? $_this_label . $_this_input : $_this_input . $_this_label ) . '</div>';
+                        switch ( $field->subLabelPlacement ) {
+                            case 'below':
+                                $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_input . $_this_label . '</div>';
+                                break;
+                            case 'hidden':
+                                $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_input . '</div>';
+                                break;
+                            case 'above':
+                            default:
+                                $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_label . $_this_input . '</div>';
+                                break;
+                        }
                     }
 
                     $input = '<div class="row">'. 
