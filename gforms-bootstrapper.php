@@ -255,12 +255,7 @@ if (class_exists("GFForms")) {
                                     'value="' . ( ! empty( $value[ (string) $v['id'] ] ) ? $value[ (string) $v['id'] ] : ( isset( $v['defaultValue'] ) ? $v['defaultValue'] : ( $v['label'] == 'ZIP / Postal Code' ? $field->defaultState : '' ) ) ) . '" '.
                                     'placeholder="' . ( isset( $v['placeholder'] ) ? $v['placeholder'] : '' ) . '" />';
                         }
-                        if ( $field->subLabelPlacement == 'above' ) {
-                            $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_label . $_this_input . '</div>';
-                        }
-                        else {
-                            $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . $_this_input . $_this_label . '</div>';
-                        }
+                        $input_this[] = '<div class="' . $_cols_arr[ $k ] . '">' . ( $field->subLabelPlacement == 'above' ? $_this_label . $_this_input : $_this_input . $_this_label ) . '</div>';
                     }
 
                     $input = '<div class="row">'. 
