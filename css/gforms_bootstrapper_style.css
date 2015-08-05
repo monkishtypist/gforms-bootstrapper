@@ -98,6 +98,12 @@ div.copy_values_option_container.checkbox {
 	text-align: center;
 }
 
+/* list fixes */
+.gfield_list.table_icons.icons-default,
+.gfield_list_icons.icons-default {
+	width: 56px;
+}
+
 /* Ready Classes */
 	/* 2 column ready class ------------------------------------------------------*/
 

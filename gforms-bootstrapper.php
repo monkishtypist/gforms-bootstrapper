@@ -491,7 +491,7 @@ if (class_exists("GFForms")) {
                                 $_td[] = '<td class="gfield_list table_cell table_'.$field->id.'_cell'.$_l.'"><input type="text" name="input_'.$field->id.'[]" value="'.$w.'" class="form-control" /></td>';
                                 $_l++;
                             }
-                            $_td[] = '<td class="gfield_list table_icons">
+                            $_td[] = '<td class="gfield_list table_icons '.( empty( $field->addIconUrl ) ? 'icons-default' : '' ).'">
                                     <img '.
                                         'src="'.( ! empty( $field->addIconUrl ) ? $field->addIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
                                         'class="add_list_item" '.
@@ -551,7 +551,7 @@ if (class_exists("GFForms")) {
                                     $_td[] = '<td class="gfield_list_cell table_'.$field->id.'_cell'.$_l.'"><input type="text" name="input_'.$field->id.'[]" value="'.$w.'" class="form-control" /></td>';
                                     $_l++;
                                 }
-                                $_td[] = '<td class="gfield_list_icons">
+                                $_td[] = '<td class="gfield_list_icons '.( empty( $field->addIconUrl ) ? 'icons-default' : '' ).'">
                                         <img '.
                                             'src="'.( ! empty( $field->addIconUrl ) ? $field->addIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
                                             'class="add_list_item" '.
