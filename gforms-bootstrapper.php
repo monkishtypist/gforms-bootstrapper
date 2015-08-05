@@ -300,6 +300,9 @@ if (class_exists("GFForms")) {
                 case 'checkbox':
                     $_input_type = false;
                     $input_this = array();
+                    $is_conditional = ( is_array( $field->conditionalLogicFields ) && ! empty( $field->conditionalLogicFields ) 
+                        ? 'onclick="gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . ']);" ' 
+                        : ' ' );
                     foreach ($field->choices as $k => $v) {
                         $input_this[] = '<div class="checkbox" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">'.
                                 '<label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '">'.
@@ -308,6 +311,7 @@ if (class_exists("GFForms")) {
                                         'type="checkbox" '.
                                         'value="' . $v['value'] . '" '.
                                         'id="choice_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '" '.
+                                        $is_conditional.
                                         ( 
                                             ( ! empty( $value[ (string) $field->inputs[ $k ]['id'] ] ) && $v['value'] == $value[ (string) $field->inputs[ $k ]['id'] ] ) 
                                                 ? 'checked="checked"' 
@@ -539,10 +543,15 @@ if (class_exists("GFForms")) {
                  */
                 case 'multiselect':
                     $_input_type = false;
-                    $input = '<select multiple="multiple" 
-                        name="input_' . $field->id . '" 
-                        id="input_' . $field->formId . '_' . $field->id . '" 
-                        class="form-control ' . $field->size . '">';
+                    $is_conditional = ( is_array( $field->conditionalLogicFields ) && ! empty( $field->conditionalLogicFields ) 
+                        ? 'onchange="gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . ']);" '.
+                            'onkeyup="clearTimeout(__gf_timeout_handle); __gf_timeout_handle = setTimeout(&quot;gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . '])&quot;, 300);" ' 
+                        : ' ' );
+                    $input = '<select multiple="multiple" '.
+                        'name="input_' . $field->id . '" '.
+                        'id="input_' . $field->formId . '_' . $field->id . '" '.
+                        $is_conditional.
+                        'class="form-control ' . $field->size . '">';
                     foreach ($field->choices as $k => $v) {
                         $input .= '<option value="' . $v['value'] . '" ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'selected="selected"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'selected="selected"' : '' ) ) . '>' . $v['text'] . '</option>';
                     }
@@ -685,6 +694,9 @@ if (class_exists("GFForms")) {
                  */
                 case 'radio':
                     $_input_type = false;
+                    $is_conditional = ( is_array( $field->conditionalLogicFields ) && ! empty( $field->conditionalLogicFields ) 
+                        ? 'onclick="gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . ']);" '
+                        : ' ' );
                     foreach ($field->choices as $k => $v) {
                         $input .= '<div class="radio" id="input_' . $field->formId . '_' . $field->id . '_' . ($k) . '">'.
                                 '<label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k) . '">'.
@@ -693,6 +705,7 @@ if (class_exists("GFForms")) {
                                         'type="radio" '.
                                         'value="' . $v['value'] . '" '.
                                         'id="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" '.
+                                        $is_conditional.
                                         ( ( ! empty( $value ) && $v['value'] == $value ) ? 'checked="checked"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'checked="checked"' : '' ) ).
                                         '>'.
                                     $v['text'].
@@ -708,10 +721,14 @@ if (class_exists("GFForms")) {
                  */
                 case 'select':
                     $_input_type = false;
-                    $input = '<select 
-                        name="input_' . $field->id . '" 
-                        id="input_' . $field->formId . '_' . $field->id . '" 
-                        class="form-control ' . $field->size . '">';
+                    $is_conditional = ( is_array( $field->conditionalLogicFields ) && ! empty( $field->conditionalLogicFields ) 
+                        ? 'onchange="gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . ']);" '
+                        : ' ' );
+                    $input = '<select '.
+                        'name="input_' . $field->id . '" '.
+                        'id="input_' . $field->formId . '_' . $field->id . '" '.
+                        $is_conditional.
+                        'class="form-control ' . $field->size . '">';
                     foreach ($field->choices as $k => $v) {
                         $input .= '<option value="' . $v['value'] . '" ' . ( ( ! empty( $value ) && $v['value'] == $value ) ? 'selected="selected"' : ( empty( $value ) && $v['isSelected'] == 1 ? 'selected="selected"' : '' ) ) . '>' . $v['text'] . '</option>';
                     }
