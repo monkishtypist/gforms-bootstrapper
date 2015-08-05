@@ -183,12 +183,13 @@ if (class_exists("GFForms")) {
             $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
 
             $_input_type = 'default';
+            $field_type = ( $field->type == 'hidden' ? 'hidden' : 'text' );
             $input_before = '';
             $input_after = '';
             $input_array = array(
                 'name'          => 'input_' . $field->id,
                 'id'            => 'input_' . $field->formId . '_' . $field->id,
-                'type'          => 'text',
+                'type'          => $field_type,
                 'value'         => $value,
                 'class'         => 'form-control ' . $field->size . ' ',
                 'placeholder'   => $field->placeholder,
@@ -470,70 +471,153 @@ if (class_exists("GFForms")) {
                     $_tr        = array();
                     // define choices
                     $_n = 1;
-                    foreach ($field->choices as $k => $v) {
-                        $_colval = $v['value'];
-                        $_colgroup[] = '<col id="gfield_list table_'.$field->id.'_col_'.$_n.'" class="gfield_list table_col_'.($_n % 2 == 0 ? 'even' : 'odd').'">';
-                        $_thead[] = '<th>'.$v['text'].'</th>';
-                        $_n++;
-                    }
-                    $_colgroup[] = '<col id="gfield_list table_'.$field->id.'_col_'.$_n.'" class="gfield_list table_col_'.($_n % 2 == 0 ? 'even' : 'odd').'">';
-                    
-                    // define value rows/cols
-                    $_m = 1;
-                    $_c = count( $value );
-                    foreach ($value as $k => $v) {
-                        $_m = $_l   = 1;
-                        $_td        = array();
-                        $_tr[ $k ]  = '<tr class="gfield_list table_row_'.($_m % 2 == 0 ? 'even' : 'odd').' gfield_list_row_'.($_m % 2 == 0 ? 'even' : 'odd').'">';
-                        foreach ($v as $w) {
-                            $_td[] = '<td class="gfield_list table_cell table_'.$field->id.'_cell'.$_l.'"><input type="text" name="input_'.$field->id.'[]" value="'.$w.'" class="form-control" /></td>';
-                            $_l++;
+                    if ( is_array($field->choices) ) {
+                        foreach ($field->choices as $k => $v) {
+                            $_colval = $v['value'];
+                            $_colgroup[] = '<col id="gfield_list table_'.$field->id.'_col_'.$_n.'" class="gfield_list table_col_'.($_n % 2 == 0 ? 'even' : 'odd').'">';
+                            $_thead[] = '<th>'.$v['text'].'</th>';
+                            $_n++;
                         }
-                        $_td[] = '<td class="gfield_list table_icons">
-                                <img '.
-                                    'src="'.( ! empty( $field->addIconUrl ) ? $field->addIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
-                                    'class="add_list_item" '.
-                                    'title="Add another row" '.
-                                    'alt="Add a row" '.
-                                    'onclick="gformAddListItem(this, 0)" '.
-                                    'style="cursor:pointer; margin:0 3px;" '.
-                                    '>'.
-                                '<img '.
-                                    'src="'.( ! empty( $field->deleteIconUrl ) ? $field->deleteIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
-                                    'title="Remove this row" '.
-                                    'alt="Remove this row" '.
-                                    'class="delete_list_item" '.
-                                    'style="cursor: pointer; '.($_c == 1 ? 'visibility: hidden;' : '').'" '.
-                                    'onclick="gformDeleteListItem(this, 0)" '.
-                                    '>'.
-                            '</td>';
-                        $_tr[ $k ] .= implode( "\n", $_td );
-                        $_tr[ $k ] .= '</tr>';
-                        $_m++;
+                        $_colgroup[] = '<col id="gfield_list table_'.$field->id.'_col_'.$_n.'" class="gfield_list table_col_'.($_n % 2 == 0 ? 'even' : 'odd').'">';
+                        
+                        // define value rows/cols
+                        $_m = 1;
+                        $_c = count( $value );
+                        foreach ($value as $k => $v) {
+                            $_m = $_l   = 1;
+                            $_td        = array();
+                            $_tr[ $k ]  = '<tr class="gfield_list table_row_'.($_m % 2 == 0 ? 'even' : 'odd').' gfield_list_row_'.($_m % 2 == 0 ? 'even' : 'odd').'">';
+                            foreach ($v as $w) {
+                                $_td[] = '<td class="gfield_list table_cell table_'.$field->id.'_cell'.$_l.'"><input type="text" name="input_'.$field->id.'[]" value="'.$w.'" class="form-control" /></td>';
+                                $_l++;
+                            }
+                            $_td[] = '<td class="gfield_list table_icons">
+                                    <img '.
+                                        'src="'.( ! empty( $field->addIconUrl ) ? $field->addIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                        'class="add_list_item" '.
+                                        'title="Add another row" '.
+                                        'alt="Add a row" '.
+                                        'onclick="gformAddListItem(this, 0)" '.
+                                        'style="cursor:pointer; margin:0 3px;" '.
+                                        '>'.
+                                    '<img '.
+                                        'src="'.( ! empty( $field->deleteIconUrl ) ? $field->deleteIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                        'title="Remove this row" '.
+                                        'alt="Remove this row" '.
+                                        'class="delete_list_item" '.
+                                        'style="cursor: pointer; '.($_c == 1 ? 'visibility: hidden;' : '').'" '.
+                                        'onclick="gformDeleteListItem(this, 0)" '.
+                                        '>'.
+                                '</td>';
+                            $_tr[ $k ] .= implode( "\n", $_td );
+                            $_tr[ $k ] .= '</tr>';
+                            $_m++;
+                        }
+                        $input = '<input type="text" id="input_'.$field->formId.'_'.$field->id.'_shim" style="position:absolute;left:-999em;" onfocus="jQuery( &quot;#field_'.$field->formId.'_'.$field->id.' table tr td:first-child input&quot; ).focus();">'.
+                            '<table class="gfield_list table">'.
+                                '<colgroup>'.
+                                    implode( "\n", $_colgroup ).
+                                '</colgroup>'.
+                                '<thead>'.
+                                    '<tr>'.
+                                        implode( "\n", $_thead ).
+                                        '<th>&nbsp;</th>'.
+                                    '</tr>'.
+                                '</thead>'.
+                                '<tbody>'.
+                                    implode( "\n", $_tr ).
+                                '</tbody>'.
+                                '<style type="text/css">'.
+                                '/* add SVG background image support for retina devices -------------------------------*/'.
+                                'img.add_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgNTEyYy0xNDEuMzc1IDAtMjU2LTExNC42MDktMjU2LTI1NnMxMTQuNjI1LTI1NiAyNTYtMjU2YzE0MS4zOTEgMCAyNTYgMTE0LjYwOSAyNTYgMjU2cy0xMTQuNjA5IDI1Ni0yNTYgMjU2ek0yNTYgNjRjLTEwNi4wMzEgMC0xOTIgODUuOTY5LTE5MiAxOTJzODUuOTY5IDE5MiAxOTIgMTkyYzEwNi4wNDcgMCAxOTItODUuOTY5IDE5Mi0xOTJzLTg1Ljk1My0xOTItMTkyLTE5MnpNMjg4IDM4NGgtNjR2LTk2aC05NnYtNjRoOTZ2LTk2aDY0djk2aDk2djY0aC05NnY5NnoiPjwvcGF0aD48L3N2Zz4=);}'.
+                                'img.delete_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgMGMtMTQxLjM3NSAwLTI1NiAxMTQuNjI1LTI1NiAyNTYgMCAxNDEuMzkxIDExNC42MjUgMjU2IDI1NiAyNTYgMTQxLjM5MSAwIDI1Ni0xMTQuNjA5IDI1Ni0yNTYgMC0xNDEuMzc1LTExNC42MDktMjU2LTI1Ni0yNTZ6TTI1NiA0NDhjLTEwNi4wMzEgMC0xOTItODUuOTY5LTE5Mi0xOTJzODUuOTY5LTE5MiAxOTItMTkyYzEwNi4wNDcgMCAxOTIgODUuOTY5IDE5MiAxOTJzLTg1Ljk1MyAxOTItMTkyIDE5MnpNMTI4IDI4OGgyNTZ2LTY0aC0yNTZ2NjR6Ij48L3BhdGg+PC9zdmc+);}'.
+                                'img.add_list_item,'.
+                                'img.delete_list_item {width: 1em;height: 1em;background-size: 1em 1em;opacity: 0.5;}'.
+                                'img.add_list_item:hover,img.add_list_item:active,img.delete_list_item:hover,img.delete_list_item:active {opacity: 1.0;}'.
+                                '</style>'.
+                            '</table>';
                     }
-                    $input = '<input type="text" id="input_'.$field->formId.'_'.$field->id.'_shim" style="position:absolute;left:-999em;" onfocus="jQuery( &quot;#field_'.$field->formId.'_'.$field->id.' table tr td:first-child input&quot; ).focus();">'.
-                        '<table class="gfield_list table">'.
-                            '<colgroup>'.
-                                implode( "\n", $_colgroup ).
-                            '</colgroup>'.
-                            '<thead>'.
-                                '<tr>'.
-                                    implode( "\n", $_thead ).
-                                    '<th>&nbsp;</th>'.
-                                '</tr>'.
-                            '</thead>'.
-                            '<tbody>'.
-                                implode( "\n", $_tr ).
-                            '</tbody>'.
-                            '<style type="text/css">'.
-                            '/* add SVG background image support for retina devices -------------------------------*/'.
-                            'img.add_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgNTEyYy0xNDEuMzc1IDAtMjU2LTExNC42MDktMjU2LTI1NnMxMTQuNjI1LTI1NiAyNTYtMjU2YzE0MS4zOTEgMCAyNTYgMTE0LjYwOSAyNTYgMjU2cy0xMTQuNjA5IDI1Ni0yNTYgMjU2ek0yNTYgNjRjLTEwNi4wMzEgMC0xOTIgODUuOTY5LTE5MiAxOTJzODUuOTY5IDE5MiAxOTIgMTkyYzEwNi4wNDcgMCAxOTItODUuOTY5IDE5Mi0xOTJzLTg1Ljk1My0xOTItMTkyLTE5MnpNMjg4IDM4NGgtNjR2LTk2aC05NnYtNjRoOTZ2LTk2aDY0djk2aDk2djY0aC05NnY5NnoiPjwvcGF0aD48L3N2Zz4=);}'.
-                            'img.delete_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgMGMtMTQxLjM3NSAwLTI1NiAxMTQuNjI1LTI1NiAyNTYgMCAxNDEuMzkxIDExNC42MjUgMjU2IDI1NiAyNTYgMTQxLjM5MSAwIDI1Ni0xMTQuNjA5IDI1Ni0yNTYgMC0xNDEuMzc1LTExNC42MDktMjU2LTI1Ni0yNTZ6TTI1NiA0NDhjLTEwNi4wMzEgMC0xOTItODUuOTY5LTE5Mi0xOTJzODUuOTY5LTE5MiAxOTItMTkyYzEwNi4wNDcgMCAxOTIgODUuOTY5IDE5MiAxOTJzLTg1Ljk1MyAxOTItMTkyIDE5MnpNMTI4IDI4OGgyNTZ2LTY0aC0yNTZ2NjR6Ij48L3BhdGg+PC9zdmc+);}'.
-                            'img.add_list_item,'.
-                            'img.delete_list_item {width: 1em;height: 1em;background-size: 1em 1em;opacity: 0.5;}'.
-                            'img.add_list_item:hover,img.add_list_item:active,img.delete_list_item:hover,img.delete_list_item:active {opacity: 1.0;}'.
-                            '</style>'.
-                        '</table>';
+                    else {
+                        for ($i = 1; $i <= 2; $i++) { 
+                            $_colgroup[] = '<col id="gfield_list_'.$field->id.'_col'.$i.'" class="gfield_list_col_'.($i % 2 == 0 ? 'even' : 'odd').'">';
+                        }
+                        if ( is_array($value) ) {
+                            $_c = count( $value );
+                            foreach ($value as $k => $v) {
+                                $_m = $_l   = 1;
+                                $_td        = array();
+                                $_tr[ $k ]  = '<tr class="gfield_list_row_'.($_m % 2 == 0 ? 'even' : 'odd').'">';
+                                foreach ($v as $w) {
+                                    $_td[] = '<td class="gfield_list_cell table_'.$field->id.'_cell'.$_l.'"><input type="text" name="input_'.$field->id.'[]" value="'.$w.'" class="form-control" /></td>';
+                                    $_l++;
+                                }
+                                $_td[] = '<td class="gfield_list_icons">
+                                        <img '.
+                                            'src="'.( ! empty( $field->addIconUrl ) ? $field->addIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                            'class="add_list_item" '.
+                                            'title="Add another row" '.
+                                            'alt="Add a row" '.
+                                            'onclick="gformAddListItem(this, 0)" '.
+                                            'style="cursor:pointer; margin:0 3px;" '.
+                                            '>'.
+                                        '<img '.
+                                            'src="'.( ! empty( $field->deleteIconUrl ) ? $field->deleteIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                            'title="Remove this row" '.
+                                            'alt="Remove this row" '.
+                                            'class="delete_list_item" '.
+                                            'style="cursor: pointer; '.($_c == 1 ? 'visibility: hidden;' : '').'" '.
+                                            'onclick="gformDeleteListItem(this, 0)" '.
+                                            '>'.
+                                    '</td>';
+                                $_tr[ $k ] .= implode( "\n", $_td );
+                                $_tr[ $k ] .= '</tr>';
+                                $_m++;
+                            }
+                        }
+                        else {
+                            $_m = $_l = $_c = 1;
+                            $_td        = array();
+                            $_tr = '<tr class="gfield_list_row_'.($_m % 2 == 0 ? 'even' : 'odd').'">';
+                            $_td[] = '<td class="gfield_list_cell table_'.$field->id.'_cell'.$_l.'"><input type="text" name="input_'.$field->id.'[]" value="" class="form-control" /></td>';
+                            $_td[] = '<td class="gfield_list_icons">
+                                    <img '.
+                                        'src="'.( ! empty( $field->addIconUrl ) ? $field->addIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                        'class="add_list_item" '.
+                                        'title="Add another row" '.
+                                        'alt="Add a row" '.
+                                        'onclick="gformAddListItem(this, 0)" '.
+                                        'style="cursor:pointer; margin:0 3px;" '.
+                                        '>'.
+                                    '<img '.
+                                        'src="'.( ! empty( $field->deleteIconUrl ) ? $field->deleteIconUrl : plugins_url() . '/gravityforms/images/blankspace.png' ).'" '.
+                                        'title="Remove this row" '.
+                                        'alt="Remove this row" '.
+                                        'class="delete_list_item" '.
+                                        'style="cursor: pointer; '.($_c == 1 ? 'visibility: hidden;' : '').'" '.
+                                        'onclick="gformDeleteListItem(this, 0)" '.
+                                        '>'.
+                                '</td>';
+                            $_tr .= implode( "\n", $_td );
+                            $_tr .= '</tr>';
+                        }
+                        $input = '<input type="text" id="input_'.$field->formId.'_'.$field->id.'_shim" style="position:absolute;left:-999em;" onfocus="jQuery( &quot;#field_'.$field->formId.'_'.$field->id.' table tr td:first-child input&quot; ).focus();">'.
+                            '<table class="gfield_list table">'.
+                                '<colgroup>'.
+                                    implode( "\n", $_colgroup ).
+                                '</colgroup>'.
+                                '<tbody>'.
+                                    $_tr.
+                                '</tbody>'.
+                                '<style type="text/css">'.
+                                '/* add SVG background image support for retina devices -------------------------------*/'.
+                                'img.add_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgNTEyYy0xNDEuMzc1IDAtMjU2LTExNC42MDktMjU2LTI1NnMxMTQuNjI1LTI1NiAyNTYtMjU2YzE0MS4zOTEgMCAyNTYgMTE0LjYwOSAyNTYgMjU2cy0xMTQuNjA5IDI1Ni0yNTYgMjU2ek0yNTYgNjRjLTEwNi4wMzEgMC0xOTIgODUuOTY5LTE5MiAxOTJzODUuOTY5IDE5MiAxOTIgMTkyYzEwNi4wNDcgMCAxOTItODUuOTY5IDE5Mi0xOTJzLTg1Ljk1My0xOTItMTkyLTE5MnpNMjg4IDM4NGgtNjR2LTk2aC05NnYtNjRoOTZ2LTk2aDY0djk2aDk2djY0aC05NnY5NnoiPjwvcGF0aD48L3N2Zz4=);}'.
+                                'img.delete_list_item {background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGlkPSJpY29tb29uLWlnbm9yZSI+PC9nPjxwYXRoIGQ9Ik0yNTYgMGMtMTQxLjM3NSAwLTI1NiAxMTQuNjI1LTI1NiAyNTYgMCAxNDEuMzkxIDExNC42MjUgMjU2IDI1NiAyNTYgMTQxLjM5MSAwIDI1Ni0xMTQuNjA5IDI1Ni0yNTYgMC0xNDEuMzc1LTExNC42MDktMjU2LTI1Ni0yNTZ6TTI1NiA0NDhjLTEwNi4wMzEgMC0xOTItODUuOTY5LTE5Mi0xOTJzODUuOTY5LTE5MiAxOTItMTkyYzEwNi4wNDcgMCAxOTIgODUuOTY5IDE5MiAxOTJzLTg1Ljk1MyAxOTItMTkyIDE5MnpNMTI4IDI4OGgyNTZ2LTY0aC0yNTZ2NjR6Ij48L3BhdGg+PC9zdmc+);}'.
+                                'img.add_list_item,'.
+                                'img.delete_list_item {width: 1em;height: 1em;background-size: 1em 1em;opacity: 0.5;}'.
+                                'img.add_list_item:hover,img.add_list_item:active,img.delete_list_item:hover,img.delete_list_item:active {opacity: 1.0;}'.
+                                '</style>'.
+                            '</table>';
+                    }
                     break;
                 
                 /**

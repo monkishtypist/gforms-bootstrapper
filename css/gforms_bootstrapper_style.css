@@ -17,9 +17,11 @@
 .gform_wrapper {
 	max-width: 100% !important;
 }
-.gfield.col-xs-12.gform_hidden {
+.gfield.gform_hidden {
 	height: 0;
 	margin: 0;
+	position: absolute;
+	visibility: hidden;
 }
 .gform_wrapper .form-horizontal .form-group.gform_footer {
 	margin-left: -15px;
