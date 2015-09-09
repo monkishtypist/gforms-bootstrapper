@@ -894,6 +894,18 @@ if (class_exists("GFForms")) {
                     $input_array['type'] = 'text';
                     break;
                 
+                /**
+                 * HTML
+                 *
+                 * HTML input type is incomplete and only renders basic content at the moment.
+                 *
+                 * @return string
+                 */
+                case 'html':
+                    $_input_type = false;
+                    $input = '<div class="row">' . $field->content . '</div>';
+                    break;
+
                 default:
                     break;
             }
