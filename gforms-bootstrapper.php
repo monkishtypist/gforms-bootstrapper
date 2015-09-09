@@ -903,7 +903,7 @@ if (class_exists("GFForms")) {
                  */
                 case 'html':
                     $_input_type = false;
-                    $input = '<div class="row">' . $field->content . '</div>';
+                    $input = '<div class="">' . $field->content . '</div>';
                     break;
 
                 default:
