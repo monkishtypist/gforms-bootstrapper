@@ -648,7 +648,6 @@ if (class_exists("GFForms")) {
                  * @return string
                  */
                 case 'name':
-                var_dump($field);
                     $_input_type = false;
                     $input_this = array();
                     
