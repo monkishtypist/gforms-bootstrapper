@@ -648,6 +648,7 @@ if (class_exists("GFForms")) {
                  * @return string
                  */
                 case 'name':
+                var_dump($field);
                     $_input_type = false;
                     $input_this = array();
                     
@@ -733,12 +734,15 @@ if (class_exists("GFForms")) {
                                 case 'Suffix':
                                 default:
                                     $_this_label = '<label for="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '">' . ( isset( $v['customLabel'] ) ? $v['customLabel'] : $v['label'] ) . '</label>';
-                                    $_this_input = '<input type="text" name="input_' . $v['id'] . '" id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" class="form-control ' . $field->size . '" value="' . ( isset( $value[ $v['id'] ] ) ? $value[ $v['id'] ] : ( isset( $v['defaultValue'] ) ? $v['defaultValue'] : '' ) ) . '">';
+                                    $_this_input = '<input type="text" name="input_' . $v['id'] . '" id="input_' . $field->formId . '_' . $field->id . '_' . $_input_id[1] . '" class="form-control ' . $field->size . '" value="' . ( isset( $value[ $v['id'] ] ) ? $value[ $v['id'] ] : ( isset( $v['defaultValue'] ) ? $v['defaultValue'] : '' ) ) . '" placeholder="' . ( isset($v['placeholder']) ? $v['placeholder'] : '' ) . '">';
                                     break;
                             
                             }
                             
-                            if ( $field->subLabelPlacement == 'above' ) {
+                            if ( $field->subLabelPlacement == 'hidden_label' ) {
+                                $input_this[] = '<div class="'.$_cols_arr[ $_cols ][ $k ].'">' . $_this_input . '</div>';
+                            }
+                            elseif ( $field->subLabelPlacement == 'above' ) {
                                 $input_this[] = '<div class="'.$_cols_arr[ $_cols ][ $k ].'">' . $_this_label . $_this_input . '</div>';
                             }
                             else {
