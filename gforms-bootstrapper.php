@@ -136,7 +136,7 @@ if (class_exists("GFForms")) {
                 if ( $settings['btnsize'] == 'small' )
                     $classes .= ' btn-sm ';
             }
-            $button = str_replace( 'gform_button', $classes, $button );
+            $button = preg_replace( '/(class\=\")([\w\s\-]+)(\")/', 'class="' . $classes . '"', $button );
             $button = str_replace( '>', 'data-loading-text="Processing..." >', $button );
             
             if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'horizontal' ) {
