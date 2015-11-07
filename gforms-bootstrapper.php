@@ -132,11 +132,11 @@ if (class_exists("GFForms")) {
             $classes .= isset( $form['button']['bootstrap_submit_classes'] ) ? $form['button']['bootstrap_submit_classes'] : '';
             if ( isset($settings['btnsize']) ) {
                 if ( $settings['btnsize'] == 'large' )
-                    $classes .= ' btn-lg ';
+                    $classes .= 'btn-lg ';
                 if ( $settings['btnsize'] == 'small' )
-                    $classes .= ' btn-sm ';
+                    $classes .= 'btn-sm ';
             }
-            $button = preg_replace( '/(class\=\")([\w\s\-]+)(\")/', 'class="' . $classes . '"', $button );
+            $button = preg_replace( '/(class\=)("|\')([\w\s\-\_]+)("|\')/i', 'class="'.$classes.'"', $button );
             $button = str_replace( '>', 'data-loading-text="Processing..." >', $button );
             
             if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'horizontal' ) {
