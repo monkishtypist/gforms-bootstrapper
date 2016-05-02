@@ -44,7 +44,7 @@ if(!defined('ABSPATH')) exit;
 			if( !class_exists( 'GFForms' ) ) {
 
 				$class = 'notice notice-error';
-				$message = __( 'Please install Gravity Forms Plugin, it is required for Gravity Forms Bootstrapper plugin to work properly!.', 'sample-text-domain' );
+				$message = __( 'Please install Gravity Forms Plugin, it is required for Gravity Forms Bootstrapper plugin to work properly!.');
 
 				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); 
 				}
