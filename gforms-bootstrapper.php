@@ -37,6 +37,20 @@ Things to do...
 if(!defined('ABSPATH')) exit;
 
 //------------------------------------------
+
+/* Function for checking the existence of gravity form plugin */
+
+	function gforms_bootstrapper_plugin_init() {
+			if( !class_exists( 'GFForms' ) ) {
+
+				$class = 'notice notice-error';
+				$message = __( 'Please install Gravity Forms Plugin, it is required for Gravity Forms Bootstrapper plugin to work properly!.', 'sample-text-domain' );
+
+				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); 
+				}
+			}		
+	add_action( 'plugins_loaded', 'gforms_bootstrapper_plugin_init' );
+		
 if (class_exists("GFForms")) {
     GFForms::include_addon_framework();
 
