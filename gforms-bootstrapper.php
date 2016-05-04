@@ -92,7 +92,6 @@ if (class_exists("GFForms")) {
             add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_form_columns') );
             add_filter( 'gform_enable_field_label_visibility_settings', '__return_true' ); // Add "hidden" option for Sub-Label placement
 			add_action( 'admin_enqueue_scripts', array($this,'admin_bootstrapper_scripts') ); //Added action to load form setting Bootstrap Layout Horizontal column setting.
-			
 			add_action('gform_field_standard_settings', array($this, 'gform_input_group_settings'), 10, 2 );//action for adding the Input Groups to basic "Single Line Text" fields
 			add_action( 'gform_editor_js',array($this, 'editor_script'), 10, 2 ); //Action to inject supporting script to the form editor page
 			add_filter( 'gform_tooltips',array($this, 'add_encryption_tooltips'), 10, 2 ); //filter for adding the tooltip
@@ -116,9 +115,9 @@ if (class_exists("GFForms")) {
         }
         
 		
-				//for adding the Input Groups to basic "Single Line Text" fields		
-		 function gform_input_group_settings($position, $form_id){
-
+		 //for adding the Input Groups to basic "Single Line Text" fields		
+		public function gform_input_group_settings($position, $form_id){
+			//Input group to be set to be displayed between the "Description" and "Input Mask" fields that says "Input Group" 
 			if($position == 1440) {
 			?><li class="input_mask_setting field_setting">
 					<input type="checkbox" id="field_input_group" name="field_input_group"  onclick="ToggleInputGroup();" onkeypress="ToggleInputGroup();" />
@@ -158,11 +157,10 @@ if (class_exists("GFForms")) {
 			<?php
 			
 			}
-			
 		}
 
 		//for adding the tooltip
-		function add_encryption_tooltips( $tooltips ) {
+		public function add_encryption_tooltips( $tooltips ) {
 		   $tooltips['form_field_prefix'] = "<h6>Prefix</h6>will add the text before the single text line";
 		   $tooltips['form_field_suffix'] = "<h6>Suffix</h6>will add the text after the single text line";
 		   $tooltips['form_field_group'] = "<h6>Group</h6>Extend form controls by adding text before, after, or on both sides of single text line";
@@ -172,7 +170,7 @@ if (class_exists("GFForms")) {
 		}
 
 		//Action to inject supporting script to the form editor page
-		function editor_script(){
+		public function editor_script(){
 			?>
 				<script type='text/javascript'>
 				
