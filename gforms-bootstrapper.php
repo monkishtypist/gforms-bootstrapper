@@ -1075,7 +1075,7 @@ if (class_exists("GFForms")) {
             $settings['Form Layout']['bootstrap_form_layout'] = '
                 <tr>
                     <th><label for="bootstrap_form_layout">Bootstrap Layout <a href="#" onclick="return false;" class="gf_tooltip tooltip" title="<h6>Bootstrap Layout</h6>Choose between three available Bootstrap form layouts. Inline recommended for simple forms only."><i class="fa fa-question-circle"></i></a></label></th>
-                    <td><select name="bootstrap_form_layout">
+                    <td><select name="bootstrap_form_layout" id="bootstrap_form_layout_settings">
                         <option value="basic" ' . ( isset($form['bootstrap_form_layout']) && $form['bootstrap_form_layout'] == 'basic' ? 'selected="selected"' : '' ) . '">Basic</option>
                         <option value="inline" ' . ( isset($form['bootstrap_form_layout']) && $form['bootstrap_form_layout'] == 'inline' ? 'selected="selected"' : '' ) . '">Inline</option>
                         <option value="horizontal" ' . ( isset($form['bootstrap_form_layout']) && $form['bootstrap_form_layout'] == 'horizontal' ? 'selected="selected"' : '' ) . '">Horizontal</option>
@@ -1086,7 +1086,7 @@ if (class_exists("GFForms")) {
         }
         function bootstrap_setting_form_columns( $settings, $form ) {
             $settings['Form Layout']['bootstrap_form_columns'] = '
-                <tr>
+                <tr id="bootstrap_form_columns_settings">
                     <th><label for="bootstrap_form_columns">Bootstrap Column Widths <a href="#" onclick="return false;" class="gf_tooltip tooltip" title="<h6>Bootstrap Column Widths</h6>Set left and right column widths in twelfths. Only applies to horizontal form layout."><i class="fa fa-question-circle"></i></a></label></th>
                     <td><select name="bootstrap_form_columns">
                         <option value="10" ' . ( isset($form['bootstrap_form_columns']) && $form['bootstrap_form_columns'] == '10' ? 'selected="selected"' : '' ) . '">2 - 10 (default)</option>
