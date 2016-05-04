@@ -92,6 +92,10 @@ if (class_exists("GFForms")) {
             add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_form_columns') );
             add_filter( 'gform_enable_field_label_visibility_settings', '__return_true' ); // Add "hidden" option for Sub-Label placement
 			add_action( 'admin_enqueue_scripts', array($this,'admin_bootstrapper_scripts') ); //Added action to load form setting Bootstrap Layout Horizontal column setting.
+			
+			add_action('gform_field_standard_settings', array($this, 'gform_input_group_settings'), 10, 2 );//action for adding the Input Groups to basic "Single Line Text" fields
+			add_action( 'gform_editor_js',array($this, 'editor_script'), 10, 2 ); //Action to inject supporting script to the form editor page
+			add_filter( 'gform_tooltips',array($this, 'add_encryption_tooltips'), 10, 2 ); //filter for adding the tooltip
         }
 
         public function init_frontend(){
@@ -110,7 +114,103 @@ if (class_exists("GFForms")) {
             parent::init_ajax();
             // add tasks or filters here that you want to perform only during ajax requests
         }
+        
+		
+				//for adding the Input Groups to basic "Single Line Text" fields		
+		 function gform_input_group_settings($position, $form_id){
 
+			if($position == 1440) {
+			?><li class="input_mask_setting field_setting">
+					<input type="checkbox" id="field_input_group" name="field_input_group"  onclick="ToggleInputGroup();" onkeypress="ToggleInputGroup();" />
+					<label for="field_input_group" class="inline">
+						<?php esc_html_e( 'Input Group', 'gravityforms' ); ?>
+						<?php gform_tooltip( 'form_field_group' ) ?>
+					</label><br />
+
+					<div id="gform_input_group" style="display:none">
+					  
+							<div style="width:100px;">
+								<label for="input_group_prefix" class="inline">
+									<?php esc_html_e( 'Prefix', 'gravityforms' ); ?>
+									<?php gform_tooltip( 'form_field_prefix' ) ?>
+								</label>
+								<input type="text"  name="input_group_prefix" id="input_group_prefix" size="10" onkeypress="SetFieldProperty('input_group_prefix', jQuery(this).val());" />
+							</div>
+							<div style="width:100px;">
+								<label for="input_group_suffix" class="inline">
+									<?php esc_html_e( 'Suffix', 'gravityforms' ); ?>
+									<?php gform_tooltip( 'form_field_suffix' ) ?>
+								</label>
+								<input type="text" name="input_group_suffix" id="input_group_suffix" size="10" onkeypress="SetFieldProperty('input_group_suffix', jQuery(this).val());"/>
+							</div>
+							<label for="field_size">
+								<?php esc_html_e( 'Field Size', 'gravityforms' ); ?>
+								<?php gform_tooltip( 'form_field_size_group' ) ?>
+							</label>
+							<select id="field_group_select" name="field_group_select" onchange="SetFieldProperty('inputGroupValue', jQuery(this).val());">
+									<option value="medium"><?php esc_html_e( 'Medium', 'gravityforms' ); ?></option>
+									<option value="small"><?php esc_html_e( 'Small', 'gravityforms' ); ?></option>
+									<option value="large"><?php esc_html_e( 'Large', 'gravityforms' ); ?></option>
+							</select>
+								
+					</div>
+				</li>
+			<?php
+			
+			}
+			
+		}
+
+		//for adding the tooltip
+		function add_encryption_tooltips( $tooltips ) {
+		   $tooltips['form_field_prefix'] = "<h6>Prefix</h6>will add the text before the single text line";
+		   $tooltips['form_field_suffix'] = "<h6>Suffix</h6>will add the text after the single text line";
+		   $tooltips['form_field_group'] = "<h6>Group</h6>Extend form controls by adding text before, after, or on both sides of single text line";
+		   $tooltips['form_field_size_group'] = "<h6>Field Size</h6>Select a form field size from the available options. This will set the width of the field.";
+		   
+		   return $tooltips;
+		}
+
+		//Action to inject supporting script to the form editor page
+		function editor_script(){
+			?>
+				<script type='text/javascript'>
+				
+				//binding to the load field settings event to initialize the checkbox
+				jQuery(document).bind("gform_load_field_settings", function(event, field, form){
+				   
+					 if(field["inputGroup"] == true)
+					 {
+					   jQuery("#gform_input_group").show();
+					 }
+					 
+					 jQuery("#field_input_group").attr("checked", field["inputGroup"] == true);
+					 jQuery("#input_group_prefix").val(field["input_group_prefix"]);
+					 jQuery("#input_group_suffix").val(field["input_group_suffix"]);
+					 jQuery("#field_group_select").val(field["inputGroupValue"]);
+				});
+				
+				  function ToggleInputGroup(isInit){
+				   var speed = isInit ? "" : "slow";
+				   if(jQuery("#field_input_group").is(":checked")){
+						jQuery("#gform_input_group").show(speed);
+						SetFieldProperty('inputGroup', true);
+					}
+					else
+					{
+					  jQuery("#gform_input_group").hide(speed);
+					   jQuery("#input_group_prefix").val('');
+					 jQuery("#input_group_suffix").val('');
+					  SetFieldProperty('inputGroup', false);
+					
+					}
+				 }
+				</script>
+			<?php
+		}
+		 
+
+		 
         /**
          * gform_form_tag
          *
