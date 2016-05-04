@@ -77,6 +77,7 @@ if (class_exists("GFForms")) {
             add_filter( 'gform_form_settings', array($this, 'bootstrap_setting_form_columns'), 10, 2 );
             add_filter( 'gform_pre_form_settings_save', array($this, 'save_bootstrap_setting_form_columns') );
             add_filter( 'gform_enable_field_label_visibility_settings', '__return_true' ); // Add "hidden" option for Sub-Label placement
+			add_action( 'admin_enqueue_scripts', array($this,'admin_bootstrapper_scripts') ); //Added action to load form setting Bootstrap Layout Horizontal column setting.
         }
 
         public function init_frontend(){
@@ -1188,6 +1189,26 @@ if (class_exists("GFForms")) {
 
             wp_enqueue_style( $style['handle'], $style['src'] );
 
+        }
+		
+		/**
+         *  Plugin Scripts
+         *
+         *  Call scripts for Form Settings
+         *
+         **/
+
+		
+        public function admin_bootstrapper_scripts() {
+            $script = array(
+                "handle"    => "gforms_bootstrapper_admin_setting_js",
+                "src"       => $this->get_base_url() . "/js/gforms_bootstrapper_admin_setting_js.js",
+                "deps"      => 'jquery',
+                "ver"       => $this->_version,
+                "in_footer" => true,
+            );
+			
+            wp_enqueue_script( $script['handle'], $script['src'], $script['deps'], $script['ver'], $script['in_footer'] );
         }
 
     }
