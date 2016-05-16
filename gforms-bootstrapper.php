@@ -36,6 +36,8 @@ Things to do...
 //exit if accessed directly
 if(!defined('ABSPATH')) exit;
 
+global $pagenow;
+
 //------------------------------------------
 
 /* Function for checking the existence of gravity form plugin */
@@ -48,8 +50,10 @@ if(!defined('ABSPATH')) exit;
 
 				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); 
 				}
-			}		
-	add_action( 'plugins_loaded', 'gforms_bootstrapper_plugin_init' );
+			}
+	if ( $pagenow == 'plugins.php' ) {		
+			add_action( 'plugins_loaded', 'gforms_bootstrapper_plugin_init' );
+	}
 		
 if (class_exists("GFForms")) {
     GFForms::include_addon_framework();
