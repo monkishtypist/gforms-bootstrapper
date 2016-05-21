@@ -3,13 +3,13 @@
 Plugin Name: Gravity Forms Bootstrapper
 Plugin URI: http://www.ninthlink.com
 Description: A Gravity Forms add-on to add Bootstrap CSS classes to forms
-Version: 1.0
-Author: Tim @ Ninthlink
+Version: 1.0.0
+Author: Ninthlink
 Author URI: http://www.ninthlink.com
 Documentation: http://www.gravityhelp.com/documentation/page/GFAddOn
 
 ------------------------------------------------------------------------
-Copyright 2014 Ninthlink, Inc.
+Copyright 2016 Ninthlink, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
