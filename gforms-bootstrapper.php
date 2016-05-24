@@ -120,7 +120,7 @@ if (class_exists("GFForms")) {
 			//Input group to be set to be displayed between the "Description" and "Input Mask" fields that says "Input Group" 
 			if($position == 1440) {
 			?><li class="input_mask_setting field_setting">
-					<input type="checkbox" id="field_input_group" name="field_input_group"  onclick="ToggleInputGroup();" onkeypress="ToggleInputGroup();" />
+					<input type="checkbox" id="field_input_group" name="field_input_group"  onclick="ToggleInputGroup();" onkeyup="ToggleInputGroup();" />
 					<label for="field_input_group" class="inline">
 						<?php esc_html_e( 'Input Group', 'gravityforms' ); ?>
 						<?php gform_tooltip( 'form_field_group' ) ?>
@@ -133,17 +133,17 @@ if (class_exists("GFForms")) {
 									<?php esc_html_e( 'Prefix', 'gravityforms' ); ?>
 									<?php gform_tooltip( 'form_field_prefix' ) ?>
 								</label>
-								<input type="text"  name="input_group_prefix" id="input_group_prefix" size="10" onkeypress="SetFieldProperty('input_group_prefix', jQuery(this).val());" />
+								<input type="text"  name="input_group_prefix" id="input_group_prefix" size="10" class="ginput" onkeyup="SetFieldProperty('input_group_prefix', jQuery(this).val());" />
 							</div>
 							<div style="width:100px;">
 								<label for="input_group_suffix" class="inline">
 									<?php esc_html_e( 'Suffix', 'gravityforms' ); ?>
 									<?php gform_tooltip( 'form_field_suffix' ) ?>
 								</label>
-								<input type="text" name="input_group_suffix" id="input_group_suffix" size="10" onkeypress="SetFieldProperty('input_group_suffix', jQuery(this).val());"/>
+								<input type="text" name="input_group_suffix" id="input_group_suffix" size="10" class="ginput" onkeyup="SetFieldProperty('input_group_suffix', jQuery(this).val());"/>
 							</div>
 							<label for="field_size">
-								<?php esc_html_e( 'Field Size', 'gravityforms' ); ?>
+								<?php esc_html_e( 'Input Group Size', 'gravityforms' ); ?>
 								<?php gform_tooltip( 'form_field_size_group' ) ?>
 							</label>
 							<select id="field_group_select" name="field_group_select" onchange="SetFieldProperty('inputGroupValue', jQuery(this).val());">
@@ -186,13 +186,18 @@ if (class_exists("GFForms")) {
 					 jQuery("#input_group_prefix").val(field["input_group_prefix"]);
 					 jQuery("#input_group_suffix").val(field["input_group_suffix"]);
 					 jQuery("#field_group_select").val(field["inputGroupValue"]);
+					 
+					 
 				});
 				
+		
+			
 				  function ToggleInputGroup(isInit){
 				   var speed = isInit ? "" : "slow";
 				   if(jQuery("#field_input_group").is(":checked")){
 						jQuery("#gform_input_group").show(speed);
 						SetFieldProperty('inputGroup', true);
+						
 					}
 					else
 					{
@@ -200,6 +205,10 @@ if (class_exists("GFForms")) {
 					   jQuery("#input_group_prefix").val('');
 					 jQuery("#input_group_suffix").val('');
 					  SetFieldProperty('inputGroup', false);
+					  SetFieldProperty('inputGroupValue','medium');
+					  SetFieldProperty('input_group_suffix','');
+					  SetFieldProperty('input_group_prefix','');
+					  
 					
 					}
 				 }
