@@ -82,8 +82,8 @@ if (class_exists("GFForms")) {
         public function init_frontend(){
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
-            if ( ! wp_style_is( 'pgb_bootstrap' ) ) {
-                add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
+            if ( ! wp_style_is( 'bootstrap' ) && ! wp_style_is( 'pgb_bootstrap' ) ) {
+                add_action( 'wp_enqueue_scripts', array($this, 'default_bootstrap_styles'), 10 );
             }
             add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
             add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_scripts'), 10 );
