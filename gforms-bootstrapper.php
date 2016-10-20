@@ -82,6 +82,9 @@ if (class_exists("GFForms")) {
         public function init_frontend(){
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
+            if ( ! wp_style_is( 'pgb_bootstrap' ) ) {
+                add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
+            }
             add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
             add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_scripts'), 10 );
             add_filter( 'gform_field_css_class', array($this, 'bootstrap_css_classes'), 10, 3);
@@ -1173,7 +1176,7 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         *  Plugin Styles
+         *  Plugin Custom Styles
          *
          *  Call styles that we may want apply on form pages
          *
@@ -1183,6 +1186,24 @@ if (class_exists("GFForms")) {
             $style = array(
                 "handle"  => "gforms_bootstrapper_style",
                 "src"     => $this->get_base_url() . "/css/gforms_bootstrapper_style.css",
+                "version" => $this->_version,
+            );
+
+            wp_enqueue_style( $style['handle'], $style['src'] );
+
+        }
+
+        /**
+         *  Plugin Default Bootstrap Styles
+         *
+         *  Call styles that we may want apply on form pages
+         *
+         **/
+        public function default_bootstrap_styles() {
+
+            $style = array(
+                "handle"  => "bootstrap_min_style",
+                "src"     => $this->get_base_url() . "/css/bootstrap.min.css",
                 "version" => $this->_version,
             );
 
