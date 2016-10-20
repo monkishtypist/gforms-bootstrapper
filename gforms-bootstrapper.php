@@ -82,15 +82,18 @@ if (class_exists("GFForms")) {
         public function init_frontend(){
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
-            if ( ! wp_style_is( 'bootstrap' ) && ! wp_style_is( 'pgb_bootstrap' ) ) {
-                add_action( 'wp_enqueue_scripts', array($this, 'default_bootstrap_styles'), 10 );
+            if ( ! wp_style_is( 'bootstrap' ) && ! wp_style_is( 'pgb-bootstrap' ) ) {
+                add_action( 'wp_enqueue_scripts', array($this, 'gform_default_bootstrap_styles'), 10 );
             }
-            add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_styles'), 10 );
-            add_action( 'wp_enqueue_scripts', array($this, 'bootstrapper_scripts'), 10 );
-            add_filter( 'gform_field_css_class', array($this, 'bootstrap_css_classes'), 10, 3);
-            add_filter( 'gform_field_content', array($this, 'bootstrap_field_content'), 10, 5 );
-            add_filter( 'gform_field_input' , array($this, 'bootstrap_field_input'), 10, 5 );
-            add_filter( 'gform_get_form_filter', array($this, 'bootstrap_gravity_form_filter'), 10, 2 );
+            if ( ! wp_script_is( 'bootstrap' ) && ! wp_script_is( 'pgb-bootstrapjs' ) ) {
+                add_action( 'wp_enqueue_scripts', array($this, 'gform_default_bootstrap_scripts'), 10 );
+            }
+            add_action( 'wp_enqueue_scripts', array($this, 'gform_bootstrapper_styles'), 10 );
+            add_action( 'wp_enqueue_scripts', array($this, 'gform_bootstrapper_scripts'), 10 );
+            add_filter( 'gform_field_css_class', array($this, 'gform_bootstrapper_css_classes'), 10, 3);
+            add_filter( 'gform_field_content', array($this, 'gform_bootstrapper_field_content'), 10, 5 );
+            add_filter( 'gform_field_input' , array($this, 'gform_bootstrapper_field_input'), 10, 5 );
+            add_filter( 'gform_get_form_filter', array($this, 'gform_bootstrapper_gravity_form_filter'), 10, 2 );
             add_filter( 'gform_tabindex', '__return_false' );
         }
 
@@ -154,7 +157,7 @@ if (class_exists("GFForms")) {
          * This filter can be used to dynamically add/remove CSS classes to a field
          *
          */
-        public function bootstrap_css_classes( $classes, $field, $form ){
+        public function gform_bootstrapper_css_classes( $classes, $field, $form ){
             if ( $field['type'] == "name" ) {
                 $classes .= " custom_name_class";
             }
@@ -177,7 +180,7 @@ if (class_exists("GFForms")) {
          * This filter is executed before creating the field's input tag, allowing users to modify the field's input tag. It can also be used to create custom field types.
          *
          */
-        public function bootstrap_field_input( $input, $field, $value, $lead_id, $form_id ) {
+        public function gform_bootstrapper_field_input( $input, $field, $value, $lead_id, $form_id ) {
             $form = GFAPI::get_form($form_id);
             $settings = $this->get_form_settings($form);
             $layout = 'basic';
@@ -964,7 +967,7 @@ if (class_exists("GFForms")) {
          * This filter is executed before creating the field's content, allowing users to completely modify the way the field is rendered. It can also be used to create custom field types.
          *
          */
-        public function bootstrap_field_content( $content, $field, $value, $lead_id, $form_id ) {
+        public function gform_bootstrapper_field_content( $content, $field, $value, $lead_id, $form_id ) {
             $form = GFAPI::get_form($form_id);
             $settings = $this->get_form_settings($form);
             $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
@@ -1011,7 +1014,7 @@ if (class_exists("GFForms")) {
          *
          * to clean up & inject some stuff..
          */
-        public function bootstrap_gravity_form_filter( $form_string, $form ) {
+        public function gform_bootstrapper_gravity_form_filter( $form_string, $form ) {
             $settings = $this->get_form_settings($form);
             $btnalign = ( isset( $form['button']['bootstrap_submit_alignment'] ) && ( ! isset( $form['bootstrap_form_layout'] ) || $form['bootstrap_form_layout'] == 'basic' ) ) ? $form['button']['bootstrap_submit_alignment'] : 'default';
             $align = '';
@@ -1157,16 +1160,35 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         *  Plugin Scripts
+         *  Plugin Custom Scripts
          *
          *  Call scripts that we may want to run on form pages
          *
          **/
-        public function bootstrapper_scripts() {
+        public function gform_bootstrapper_scripts() {
 
             $script = array(
                 "handle"    => "gforms_bootstrapper_js",
                 "src"       => $this->get_base_url() . "/js/gforms_bootstrapper_js.js",
+                "deps"      => 'jquery',
+                "ver"       => $this->_version,
+                "in_footer" => true,
+            );
+
+            wp_enqueue_script( $script['handle'], $script['src'], $script['deps'], $script['ver'], $script['in_footer'] );
+        }
+
+        /**
+         *  Plugin Default Bootstrap Scripts
+         *
+         *  Call scripts that we may want to run on form pages
+         *
+         **/
+        public function gform_default_bootstrap_scripts() {
+
+            $script = array(
+                "handle"    => "bootstrap_min_js",
+                "src"       => $this->get_base_url() . "/js/bootstrap.min.js",
                 "deps"      => 'jquery',
                 "ver"       => $this->_version,
                 "in_footer" => true,
@@ -1181,7 +1203,7 @@ if (class_exists("GFForms")) {
          *  Call styles that we may want apply on form pages
          *
          **/
-        public function bootstrapper_styles() {
+        public function gform_bootstrapper_styles() {
 
             $style = array(
                 "handle"  => "gforms_bootstrapper_style",
@@ -1199,7 +1221,7 @@ if (class_exists("GFForms")) {
          *  Call styles that we may want apply on form pages
          *
          **/
-        public function default_bootstrap_styles() {
+        public function gform_default_bootstrap_styles() {
 
             $style = array(
                 "handle"  => "bootstrap_min_style",
