@@ -82,7 +82,7 @@ if (class_exists("GFForms")) {
         public function init_frontend(){
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
-            if ( ! wp_style_is( 'bootstrap' ) && ! wp_style_is( 'pgb-bootstrap' ) ) {
+            if ( ! wp_style_is( 'bootstrap-css' ) && ! wp_style_is( 'pgb-bootstrap-css' ) ) {
                 add_action( 'wp_enqueue_scripts', array($this, 'gform_default_bootstrap_styles'), 10 );
             }
             if ( ! wp_script_is( 'bootstrap' ) && ! wp_script_is( 'pgb-bootstrapjs' ) ) {
@@ -161,9 +161,9 @@ if (class_exists("GFForms")) {
             if ( $field['type'] == "name" ) {
                 $classes .= " custom_name_class";
             }
-            $settings = $this->get_form_settings($form);
+            $settings = $this->get_form_settings( $form );
             $has_error = ( $field['failed_validation'] == 1 ? 'has-error' : '' );
-            $size = ( isset($settings['btnsize']) ? $settings['btnsize'] : '' );
+            $size = ( isset( $settings['btnsize'] ) ? $settings['btnsize'] : '' );
             $classes .= " form-group " . $has_error;
             if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'horizontal' ) {
                 if ( $size == 'large' )
@@ -181,12 +181,13 @@ if (class_exists("GFForms")) {
          *
          */
         public function gform_bootstrapper_field_input( $input, $field, $value, $lead_id, $form_id ) {
-            $form = GFAPI::get_form($form_id);
-            $settings = $this->get_form_settings($form);
+            $form = GFAPI::get_form( $form_id );
+            $settings = $this->get_form_settings( $form );
             $layout = 'basic';
-            if ( isset( $form['bootstrap_form_layout'] ) )
+            if ( isset( $form['bootstrap_form_layout'] ) ) {
                 $layout = $form['bootstrap_form_layout'];
-            $col_r = ( isset($form['bootstrap_form_columns']) ? $form['bootstrap_form_columns'] : 10 );
+            }
+            $col_r = ( isset( $form['bootstrap_form_columns'] ) ? $form['bootstrap_form_columns'] : 10 );
 
             $_input_type = 'default';
             $field_type = ( $field->type == 'hidden' ? 'hidden' : 'text' );
@@ -201,7 +202,7 @@ if (class_exists("GFForms")) {
                 'placeholder'   => $field->placeholder,
                 );
 
-            switch ($field->type) {
+            switch ( $field->type ) {
 
                 /**
                  * Address
