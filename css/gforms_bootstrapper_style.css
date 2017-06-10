@@ -85,6 +85,13 @@
 	margin-top: 10px;
 }
 
+/* Date field fixes */
+.gform_wrapper .gfield_date_day,
+.gform_wrapper .gfield_date_month {
+	max-width: 100% !important;
+	width: auto !important;
+}
+
 /* address fixes */
 div.copy_values_option_container.checkbox {
 	margin-bottom: 10px;

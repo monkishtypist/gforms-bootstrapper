@@ -30,7 +30,10 @@ Things to do...
 
 - Icons and error messages? Validation messages?
 
-- Completed: Add a column width option for horizontal forms?
+- Email confirmation
+
+- Date field issues
+
 */
 
 //exit if accessed directly
@@ -82,12 +85,12 @@ if (class_exists("GFForms")) {
         public function init_frontend(){
             parent::init_frontend();
             // add tasks or filters here that you want to perform only in the front end
-            if ( ! wp_style_is( 'bootstrap-css' ) && ! wp_style_is( 'pgb-bootstrap-css' ) ) {
-                add_action( 'wp_enqueue_scripts', array($this, 'gform_default_bootstrap_styles'), 10 );
-            }
-            if ( ! wp_script_is( 'bootstrap' ) && ! wp_script_is( 'pgb-bootstrapjs' ) ) {
-                add_action( 'wp_enqueue_scripts', array($this, 'gform_default_bootstrap_scripts'), 10 );
-            }
+            // if ( ! wp_style_is( 'bootstrap-css' ) && ! wp_style_is( 'pgb-bootstrap-css' ) ) {
+            //     add_action( 'wp_enqueue_scripts', array($this, 'gform_default_bootstrap_styles'), 10 );
+            // }
+            // if ( ! wp_script_is( 'bootstrap' ) && ! wp_script_is( 'pgb-bootstrapjs' ) ) {
+            //     add_action( 'wp_enqueue_scripts', array($this, 'gform_default_bootstrap_scripts'), 10 );
+            // }
             add_action( 'wp_enqueue_scripts', array($this, 'gform_bootstrapper_styles'), 10 );
             add_action( 'wp_enqueue_scripts', array($this, 'gform_bootstrapper_scripts'), 10 );
             add_filter( 'gform_field_css_class', array($this, 'gform_bootstrapper_css_classes'), 10, 3);
@@ -366,7 +369,7 @@ if (class_exists("GFForms")) {
                                         # code...
                                         break;
                                 }
-                                $input_this[] = '<div class="gfield_date_day col-sm-4" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '_container">
+                                $input_this[] = '<div class="gfield_date_day col-xs-4 col-sm-2 col-md-1" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '_container">
                                     <input 
                                         type="number" 
                                         maxlength="' . strlen($v['label']) . '" 
