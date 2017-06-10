@@ -26,3 +26,5 @@ Do not loose any built in Gravity forms features:
 Activating plugin automatically rewrites all forms with Bootstrap.
 
 To customize settings for each form go to `All Forms > Form Settings > Bootstrap Settings`
+
+[DONATE](paypal.me/monkishtypist)
