@@ -215,7 +215,7 @@ if (class_exists("GFForms")) {
                 case 'address':
                     $_input_type = false;
 
-                    $_cols_arr = array( 'col-sm-12', 'col-sm-12', 'col-sm-6', 'col-sm-6', 'col-sm-6', 'col-sm-6' );
+                    $_cols_arr = array( 'col-sm-12', 'col-sm-12', 'col-sm-12', 'col-sm-12', 'col-sm-12', 'col-sm-12' );
 
                     $input_this = array();
 
@@ -369,7 +369,7 @@ if (class_exists("GFForms")) {
                                         # code...
                                         break;
                                 }
-                                $input_this[] = '<div class="gfield_date_day col-xs-4 col-sm-2 col-md-1" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '_container">
+                                $input_this[] = '<div class="gfield_date_day col-4 col-xs-4 col-sm-2 col-md-1" id="input_' . $field->formId . '_' . $field->id . '_' . ($k+1) . '_container">
                                     <input 
                                         type="number" 
                                         maxlength="' . strlen($v['label']) . '" 
@@ -747,7 +747,7 @@ if (class_exists("GFForms")) {
                                     break;
                             
                             }
-                            
+
                             if ( $field->subLabelPlacement == 'hidden_label' ) {
                                 $input_this[] = '<div class="'.$_cols_arr[ $_cols ][ $k ].'">' . $_this_input . '</div>';
                             }
@@ -795,7 +795,7 @@ if (class_exists("GFForms")) {
                         ? 'onclick="gf_apply_rules(' . $field->formId . ',[' . implode(',', $field->conditionalLogicFields) . ']);" '
                         : ' ' );
                     foreach ($field->choices as $k => $v) {
-                        $input .= '<div class="radio" id="input_' . $field->formId . '_' . $field->id . '_' . ($k) . '">'.
+                        $input .= '<div class="radio form-check form-check-inline" id="input_' . $field->formId . '_' . $field->id . '_' . ($k) . '">'.
                                 '<label for="choice_' . $field->formId . '_' . $field->id . '_' . ($k) . '" id="label_' . $field->formId . '_' . $field->id . '_' . ($k) . '">'.
                                     '<input '.
                                         'name="input_' . $field->id . '" '.
@@ -916,7 +916,7 @@ if (class_exists("GFForms")) {
                  */
                 case 'html':
                     $_input_type = false;
-                    $input = '<div class="">' . $field->content . '</div>';
+                    $input = $field->content;
                     break;
 
                 default:
@@ -1044,14 +1044,15 @@ if (class_exists("GFForms")) {
             $form_string = str_replace( '</li>', '</div>', $form_string );
             // set body as form group, fix for inline forms
             if ( ! isset( $form['bootstrap_form_layout'] ) || $form['bootstrap_form_layout'] == 'basic' ) {
-                $form_string = str_replace( 'gform_body', 'gform-body row', $form_string );
-                $form_string = str_replace( 'gfield ', 'gfield col-xs-12 ', $form_string );
+                // $form_string = str_replace( 'gform_body', 'gform-body row', $form_string );
+                $form_string = str_replace( 'gfield ', 'gfield col-xs-12 col-12 ', $form_string );
             }
             if ( isset( $form['bootstrap_form_layout'] ) && $form['bootstrap_form_layout'] == 'inline' ) {
                 $form_string = str_replace( 'gform_body', 'gform_body form-group', $form_string );
             }
             // set footer as form group
             $form_string = str_replace( 'gform_footer', 'gform_footer form-group '.$align, $form_string );
+            $form_string = str_replace( 'gform_page_footer', 'gform_footer form-group '.$align, $form_string );
             // column fixes - two col
             $form_string = str_replace( 'gf_left_half', 'gf_left_half col-sm-6 pull-left', $form_string );
             $form_string = str_replace( 'gf_right_half', 'gf_right_half col-sm-6 pull-right', $form_string );
@@ -1179,7 +1180,7 @@ if (class_exists("GFForms")) {
                 "in_footer" => true,
             );
 
-            wp_enqueue_script( $script['handle'], $script['src'], $script['deps'], $script['ver'], $script['in_footer'] );
+            // wp_enqueue_script( $script['handle'], $script['src'], $script['deps'], $script['ver'], $script['in_footer'] );
         }
 
         /**

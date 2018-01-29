@@ -17,12 +17,25 @@
 .gform_wrapper {
 	max-width: 100% !important;
 }
-.gfield.gform_hidden {
+.form_group {
+	float: left;
+}
+.top-label .form_group label {
+	display: block;
+	clear: both;
+}
+.gform_page {
+	width: 100%;
+}
+.gfield.gform_hidden,
+.gfield_visibility_hidden {
 	height: 0;
 	margin: 0;
+	padding: 0;
 	position: absolute;
 	visibility: hidden;
 }
+
 .gform_wrapper .form-horizontal .form-group.gform_footer {
 	margin-left: -15px;
 	margin-right: -15px;
@@ -111,153 +124,3 @@ div.copy_values_option_container.checkbox {
 	width: 56px;
 }
 
-/* Ready Classes */
-	/* 2 column ready class ------------------------------------------------------*/
-
-	.gform_wrapper .top_label div.gfield.gf_left_half {
-		margin: 0 0 0.50em 0;
-		width: 49%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_right_half {
-		margin: 0 0 0.50em 0;
-		width: 49%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_left_half,
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_right_half {
-		width: 47.20%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_right_half {
-		margin-right: 1%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_half {
-		float: left;
-		clear: left !important;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_right_half {
-		float: right;
-		clear: right !important;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_half input.medium,
-	.gform_wrapper .top_label div.gfield.gf_left_half input.large,
-	.gform_wrapper .top_label div.gfield.gf_left_half select.medium,
-	.gform_wrapper .top_label div.gfield.gf_left_half select.large,
-	.gform_wrapper .top_label div.gfield.gf_right_half input.medium,
-	.gform_wrapper .top_label div.gfield.gf_right_half input.large,
-	.gform_wrapper .top_label div.gfield.gf_right_half select.medium,
-	.gform_wrapper .top_label div.gfield.gf_right_half select.large {
-		width: 97%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_half textarea,
-	.gform_wrapper .top_label div.gfield.gf_right_half textarea {
-		width: 98%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_half input.small,
-	.gform_wrapper .top_label div.gfield.gf_right_half input.small {
-		width: 35%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_half+li.gsection,
-	.gform_wrapper .top_label div.gfield.gf_right_half+li.gsection {
-		padding: 1em 0 0.50em 0;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_half+div.gfield.gsection.gf_left_half,
-	.gform_wrapper .top_label div.gfield.gf_right_half+div.gfield.gsection.gf_left_half,
-	.gform_wrapper .top_label div.gfield.gf_left_half+div.gfield.gsection.gf_right_half,
-	.gform_wrapper .top_label div.gfield.gf_right_half+div.gfield.gsection.gf_right_half,
-	.gform_wrapper .top_label div.gfield.gsection.gf_left_half+div.gfield.gsection.gf_left_half,
-	.gform_wrapper .top_label div.gfield.gsection.gf_right_half+div.gfield.gsection.gf_left_half,
-	.gform_wrapper .top_label div.gfield.gsection.gf_right_half+div.gfield.gsection.gf_right_half {
-		padding: 1em 0 0.50em 0;
-	}
-
-	.gform_wrapper .top_label div.gfield.gsection.gf_left_half+div.gfield.gsection.gf_right_half {
-		padding: 0 0 0.50em 0;
-	}
-
-	.gform_wrapper .top_label div.gfield.gsection.gf_left_half+div.gfield.gsection.gf_right_half+div.gfield.gsection.gf_left_half+div.gfield.gsection.gf_right_half {
-		padding: 1em 0 0.50em 0;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_half+div.gfield,
-	.gform_wrapper .top_label div.gfield.gf_right_half+div.gfield,
-	.gform_wrapper .top_label div.gfield.gf_left_half+.gform_footer,
-	.gform_wrapper .top_label div.gfield.gf_right_half+.gform_footer {
-		clear: both
-	}
-
-	/* 3 column ready class ------------------------------------------------------*/
-
-	.gform_wrapper .top_label div.gfield.gf_left_third,
-	.gform_wrapper .top_label div.gfield.gf_middle_third,
-	.gform_wrapper .top_label div.gfield.gf_right_third {
-		margin: 0 0 0.50em 0;
-		width: 32%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_left_third,
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_middle_third,
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_right_third {
-		width: 29%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_right_third {
-		margin-right: 1%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_third {
-		float: left;
-		clear: left !important;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_middle_third {
-		float: left;
-		margin-left: 2% !important;
-		clear: none !important;
-	}
-
-	.gform_wrapper .top_label div.gfield.gfield_error.gf_middle_third {
-		margin-left: 3%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_right_third {
-		float: right;
-		clear: right !important;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_third input.medium,
-	.gform_wrapper .top_label div.gfield.gf_left_third input.large,
-	.gform_wrapper .top_label div.gfield.gf_left_third select.medium,
-	.gform_wrapper .top_label div.gfield.gf_left_third select.large,
-	.gform_wrapper .top_label div.gfield.gf_middle_third input.medium,
-	.gform_wrapper .top_label div.gfield.gf_middle_third input.large,
-	.gform_wrapper .top_label div.gfield.gf_middle_third select.medium,
-	.gform_wrapper .top_label div.gfield.gf_middle_third select.large,
-	.gform_wrapper .top_label div.gfield.gf_right_third input.medium,
-	.gform_wrapper .top_label div.gfield.gf_right_third input.large,
-	.gform_wrapper .top_label div.gfield.gf_right_third select.medium,
-	.gform_wrapper .top_label div.gfield.gf_right_third select.large {
-		width: 95%;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_third+li.gsection,
-	.gform_wrapper .top_label div.gfield.gf_right_third+li.gsection {
-		padding: 1em 0 0.50em 0;
-	}
-
-	.gform_wrapper .top_label div.gfield.gf_left_third+div.gfield,
-	.gform_wrapper .top_label div.gfield.gf_middle_third+div.gfield,
-	.gform_wrapper .top_label div.gfield.gf_right_third+div.gfield,
-	.gform_wrapper .top_label div.gfield.gf_left_third+.gform_footer,
-	.gform_wrapper .top_label div.gfield.gf_middle_third+.gform_footer,
-	.gform_wrapper .top_label div.gfield.gf_right_third+.gform_footer {
-		clear: both;
-	}
