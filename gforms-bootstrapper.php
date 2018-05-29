@@ -1199,7 +1199,7 @@ if (class_exists("GFForms")) {
                 "in_footer" => true,
             );
 
-            wp_enqueue_script( $script['handle'], $script['src'], $script['deps'], $script['ver'], $script['in_footer'] );
+            // wp_enqueue_script( $script['handle'], $script['src'], $script['deps'], $script['ver'], $script['in_footer'] );
         }
 
         /**
