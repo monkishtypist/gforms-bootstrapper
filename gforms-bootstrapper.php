@@ -1,15 +1,15 @@
 <?php
 /*
 Plugin Name: Gravity Forms Bootstrapper
-Plugin URI: http://www.ninthlink.com
+Plugin URI: https://github.com/monkishtypist/gforms-bootstrapper
 Description: A Gravity Forms add-on to add Bootstrap CSS classes to forms
-Version: 1.0
-Author: Tim @ Ninthlink
-Author URI: http://www.ninthlink.com
+Version: 1.1
+Author: MonkishTypist
+Author URI: http://www.monkishtypist.com
 Documentation: http://www.gravityhelp.com/documentation/page/GFAddOn
 
 ------------------------------------------------------------------------
-Copyright 2014 Ninthlink, Inc.
+Copyright 2018 MonkishTypist
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@ Things to do...
 - Email confirmation
 
 - Date field issues
+
+- Number field issues
 
 */
 
@@ -769,10 +771,11 @@ if (class_exists("GFForms")) {
                  * @return string
                  */
                 case 'number':
-                    $input_array['type'] = 'number';
+                    $input_array['type'] = 'text';
                     $input_array['step'] = 'any';
                     $input_array['min'] = $field->rangeMin;
                     $input_array['max'] = $field->rangeMax;
+                    var_dump($field);
                     break;
                 
                 /**
