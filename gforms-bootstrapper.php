@@ -775,7 +775,7 @@ if (class_exists("GFForms")) {
                     $input_array['step'] = 'any';
                     $input_array['min'] = $field->rangeMin;
                     $input_array['max'] = $field->rangeMax;
-                    var_dump($field);
+                    // var_dump($field);
                     break;
                 
                 /**
