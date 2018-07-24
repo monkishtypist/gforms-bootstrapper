@@ -1,0 +1,117 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+
+// ul {
+// 	&.gform_fields {
+// 		list-style: none;
+// 		-webkit-padding-start: 0;
+
+//     	li {
+//       		display: block;
+//     	}
+//   	}
+// }
+
+.gform_fields {
+	@extend .row !optional;
+}
+.gform_fields,
+.gfield_checkbox,
+.gfield_radio {
+	@extend .list-unstyled;
+}
+
+.gfield {
+	@extend .col-12;
+}
+
+$form-control: ".ginput_container input[type=\"color\"],
+  .ginput_container input[type=\"date\"],
+  .ginput_container input[type=\"datetime-local\"],
+  .ginput_container input[type=\"email\"],
+  .ginput_container input[type=\"image\"],
+  .ginput_container input[type=\"month\"],
+  .ginput_container input[type=\"number\"],
+  .ginput_container input[type=\"password\"],
+  .ginput_container input[type=\"reset\"],
+  .ginput_container input[type=\"search\"],
+  .ginput_container input[type=\"tel\"],
+  .ginput_container input[type=\"text\"],
+  .ginput_container input[type=\"time\"],
+  .ginput_container input[type=\"url\"],
+  .ginput_container input[type=\"week\"],
+  .ginput_container select,
+  .ginput_container textarea";
+#{$form-control} {
+    @extend .form-control;
+	&.small {
+    	@extend .form-control-sm;
+  	}
+  	&.large {
+  		@extend .form-control-lg;
+  	}
+}
+
+select.gfield_select {
+	@extend select.form-control;
+}
+textarea.textarea {
+	// height: auto;
+	@extend textarea.form-control;
+}
+
+$form-control-plaintext: ".gfield.plaintext input[type=\"email\"],
+  .gfield.plaintext input[type=\"number\"],
+  .gfield.plaintext input[type=\"tel\"],
+  .gfield.plaintext input[type=\"text\"],
+  .gfield.plaintext input[type=\"time\"],
+  .gfield.plaintext input[type=\"url\"],";
+#{$form-control-plaintext} {
+	@extend .form-control-plaintext;
+}
+
+$form-check: ".gfield_checkbox > li, .gfield_radio > li";
+#{$form-check} {
+	@extend .form-check;
+}
+
+$form-check-input: ".gfield_checkbox input[type=\"checkbox\"], .gfield_radio input[type=\"radio\"]";
+#{$form-check-input} {
+	@extend .form-check-input;
+}
+
+$form-check-label: ".ginput_container_checkbox label, .ginput_container_radio label";
+#{$form-check-label} {
+	@extend .form-check-label;
+}
+
+$inline-classes: inline, gf_list_inline, list-inline, form-check-inline;
+@each $inline-class in $inline-classes {
+	.gfield.#{$inline-class} {
+		.gfield_checkbox,
+		.gfield_radio {
+			> li {
+				@extend .form-check-inline;
+			}
+		}
+	}
+}
+
+.gfield_error {
+	#{$form-control} {
+		border-color: $form-feedback-invalid-color;
+	}
+	.validation_message {
+		color: $form-feedback-invalid-color;
+	}
+}
+.validation_error {
+	color: $form-feedback-invalid-color;
+}
+
+.gform_button {
+	@extend .btn;
+	@extend .btn-primary;
+}

@@ -1,0 +1,50 @@
+{
+  "name": "gforms-bootstrapper",
+  "version": "2.0.0",
+  "description": "Add Bootstrap CSS and classes to gravity forms.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server public/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monkishtypist/gforms-bootstrapper"
+  },
+  "keywords": [
+    "boilerplate",
+    "bootstrap",
+    "plugin",
+    "wordpress"
+  ],
+  "author": "Tim Spinks <tim@monkishtypist.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/monkishtypist/gforms-bootstrapper/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "bootstrap": "^4.1.3",
+    "browser-sync": "^2.18.12",
+    "del": "^3.0.0",
+    "font-awesome": "^4.7.0",
+    "gulp": "^3.9.1",
+    "gulp-add-src": "^1.0.0",
+    "gulp-babel": "^7.0.1",
+    "gulp-clean-css": "^3.5.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-notify": "^3.0.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^4.0.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-watch": "^5.0.1",
+    "jquery": "^3.0.0",
+    "live-server": "^1.2.0",
+    "lodash": "^4.17.10",
+    "merge-stream": "^1.0.1",
+    "minimatch": "^3.0.2"
+  }
+}
