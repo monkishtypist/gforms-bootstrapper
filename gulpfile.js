@@ -92,3 +92,5 @@ gulp.task('styles', function() {
 gulp.task('watch', function() {
     gulp.watch([paths.styles.src.all, paths.scripts.src.all], ['styles', 'scripts']);
 });
+
+gulp.task('init', ['styles', 'scripts']);

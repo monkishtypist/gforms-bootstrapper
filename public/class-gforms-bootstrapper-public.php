@@ -73,7 +73,7 @@ class Gforms_Bootstrapper_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/gforms-bootstrapper-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/gforms-bootstrapper-public.min.css', array(), $this->version, 'all' );
 
 	}
 
@@ -96,7 +96,7 @@ class Gforms_Bootstrapper_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/gforms-bootstrapper-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/gforms-bootstrapper-public.min.js', array( 'jquery' ), $this->version, false );
 
 	}
 
