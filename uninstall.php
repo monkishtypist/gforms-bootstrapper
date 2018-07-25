@@ -19,10 +19,10 @@
  * For more information, see the following discussion:
  * https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate/pull/123#issuecomment-28541913
  *
- * @link       https://github.com/monkishtypist
- * @since      1.0.0
+ * @link     https://github.com/monkishtypist
+ * @since    2.0.0
  *
- * @package    Gforms_Bootstrapper
+ * @package  Gforms_Bootstrapper
  */
 
 // If uninstall not called from WordPress, then exit.

@@ -6,8 +6,8 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       https://github.com/monkishtypist
- * @since      1.0.0
+ * @link     https://github.com/monkishtypist
+ * @since    2.0.0
  *
  * @package    Gforms_Bootstrapper
  * @subpackage Gforms_Bootstrapper/includes
@@ -19,7 +19,7 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @since      1.0.0
+ * @since    2.0.0
  * @package    Gforms_Bootstrapper
  * @subpackage Gforms_Bootstrapper/includes
  * @author     Tim Spinks <tim@monkishtypist.com>
@@ -30,7 +30,7 @@ class Gforms_Bootstrapper_i18n {
 	/**
 	 * Load the plugin text domain for translation.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 */
 	public function load_plugin_textdomain() {
 

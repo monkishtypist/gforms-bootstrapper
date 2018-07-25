@@ -3,8 +3,8 @@
 /**
  * Fired during plugin deactivation
  *
- * @link       https://github.com/monkishtypist
- * @since      1.0.0
+ * @link     https://github.com/monkishtypist
+ * @since    2.0.0
  *
  * @package    Gforms_Bootstrapper
  * @subpackage Gforms_Bootstrapper/includes
@@ -15,7 +15,7 @@
  *
  * This class defines all code necessary to run during the plugin's deactivation.
  *
- * @since      1.0.0
+ * @since    2.0.0
  * @package    Gforms_Bootstrapper
  * @subpackage Gforms_Bootstrapper/includes
  * @author     Tim Spinks <tim@monkishtypist.com>
@@ -27,7 +27,7 @@ class Gforms_Bootstrapper_Deactivator {
 	 *
 	 * Long Description.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 */
 	public static function deactivate() {
 

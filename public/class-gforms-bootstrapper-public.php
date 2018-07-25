@@ -3,8 +3,8 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       https://github.com/monkishtypist
- * @since      1.0.0
+ * @link     https://github.com/monkishtypist
+ * @since    2.0.0
  *
  * @package    Gforms_Bootstrapper
  * @subpackage Gforms_Bootstrapper/public
@@ -25,7 +25,7 @@ class Gforms_Bootstrapper_Public {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
@@ -34,7 +34,7 @@ class Gforms_Bootstrapper_Public {
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
@@ -43,7 +43,7 @@ class Gforms_Bootstrapper_Public {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
@@ -57,7 +57,7 @@ class Gforms_Bootstrapper_Public {
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 */
 	public function enqueue_styles() {
 
@@ -80,7 +80,7 @@ class Gforms_Bootstrapper_Public {
 	/**
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 */
 	public function enqueue_scripts() {
 

@@ -3,17 +3,6 @@
  * included in this file.
  */
 
-// ul {
-// 	&.gform_fields {
-// 		list-style: none;
-// 		-webkit-padding-start: 0;
-
-//     	li {
-//       		display: block;
-//     	}
-//   	}
-// }
-
 .gform_fields {
 	@extend .row !optional;
 }
