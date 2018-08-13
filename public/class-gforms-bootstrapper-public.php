@@ -109,4 +109,13 @@ class Gforms_Bootstrapper_Public {
 		return '<div class="' . $css_class . '" style="' . $style . '">' . $field_content . '</div>';
 	}
 
+	/**
+	 * Customize the Submit button
+	 *
+	 * @since    2.0.2
+	 */
+	public function custom_form_submit_button( $button, $form ) {
+		return '<input type="submit" class="gform_button button btn btn-primary" id="gform_submit_button_' . $form['id'] . '" value="' . $form['button']['text'] . '">';
+	}
+
 }

@@ -16,10 +16,10 @@
  * Plugin Name:       Gravity Forms Bootstrapper
  * Plugin URI:        https://github.com/monkishtypist/gforms-bootstrapper
  * Description:       Add Bootstrap CSS and classes to gravity forms.
- * Version:           2.0.0
+ * Version:           2.0.2
  * Author:            Tim Spinks
  * Author URI:        https://github.com/monkishtypist
- * License:           GPL-2.0+
+ * License:           GPL-3.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       gforms-bootstrapper
  * Domain Path:       /languages

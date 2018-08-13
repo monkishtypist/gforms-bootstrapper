@@ -179,7 +179,7 @@ class Gforms_Bootstrapper extends GFAddOn {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		$this->loader->add_filter( 'gform_field_css_class', $plugin_public, 'custom_field_classes', 10, 3 );
-		// $this->loader->add_filter( 'gform_field_container', $plugin_public, 'custom_field_container', 10, 6 );
+		$this->loader->add_filter( 'gform_submit_button', $plugin_public, 'custom_form_submit_button', 10, 2 );
 	}
 
 	/**
