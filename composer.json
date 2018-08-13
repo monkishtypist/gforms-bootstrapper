@@ -1,0 +1,14 @@
+{
+    "name": "monkishtypist/gforms-bootstrapper",
+    "description": "GravityForms Bootstrapper",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=5.6"
+    },
+    "license": "GPLv3",
+    "authors": [
+        {
+        	"name": "Tim Spinks"
+        }
+    ]
+}
