@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Updated
 - readme.txt
+- license.txt to GPL-3
 
 ## [2.0.0] - 2018-07-25
 ### Added
