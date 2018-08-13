@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - composer.json
+- new Submit button rewrite function
+- custom validation alert banner
 
 ### Updated
 - readme.txt

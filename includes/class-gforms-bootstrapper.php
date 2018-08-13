@@ -180,6 +180,7 @@ class Gforms_Bootstrapper extends GFAddOn {
 
 		$this->loader->add_filter( 'gform_field_css_class', $plugin_public, 'custom_field_classes', 10, 3 );
 		$this->loader->add_filter( 'gform_submit_button', $plugin_public, 'custom_form_submit_button', 10, 2 );
+		$this->loader->add_filter( 'gform_validation_message', $plugin_public, 'custom_validation_message', 10, 2 );
 	}
 
 	/**
