@@ -100,11 +100,21 @@ class Gforms_Bootstrapper_Public {
 
 	}
 
+	/**
+	 * Add custom classes to fields.
+	 *
+	 * @since    2.0.0
+	 */
 	public function custom_field_classes( $classes, $field, $form ) {
 		$classes .= ' form-group';
 		return $classes;
 	}
 
+	/**
+	 * Customize the field container.
+	 *
+	 * @since    2.0.0
+	 */
 	public function custom_field_container( $field_container, $field, $form, $css_class, $style, $field_content ) {
 		return '<div class="' . $css_class . '" style="' . $style . '">' . $field_content . '</div>';
 	}
@@ -115,7 +125,7 @@ class Gforms_Bootstrapper_Public {
 	 * @since    2.0.2
 	 */
 	public function custom_form_submit_button( $button, $form ) {
-		return '<input type="submit" class="gform_button button btn btn-primary" id="gform_submit_button_' . $form['id'] . '" value="' . $form['button']['text'] . '">';
+		return '<button type="submit" class="gform_button button btn ' . $form['submit_css_classes'] . '" id="gform_submit_button_' . $form['id'] . '" >' . $form['button']['text'] . '</button>';
 	}
 
 	/**

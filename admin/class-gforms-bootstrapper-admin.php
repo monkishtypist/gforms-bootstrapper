@@ -100,4 +100,46 @@ class Gforms_Bootstrapper_Admin {
 
 	}
 
+	/**
+	 * Custom tooltips.
+	 *
+	 * @since    2.0.5
+	 */
+	public function add_tooltips( $tooltips ) {
+		$tooltips['submit_button_css'] = '<h6>Button CSS Classes</h6>Enter the CSS classes you would like to use in addition to the default styles for the Submit button. Try `btn-primary` or `btn-secondary` for example.';
+		return $tooltips;
+	}
+
+	/**
+	 * Custom Submit Button setting for CSS classes.
+	 *
+	 * @since    2.0.5
+	 */
+	public function custom_form_submit_button_classes_setting( $settings, $form ) {
+		$settings[ __( 'Form Button', 'gravityforms' ) ]['submit_css_classes'] = '
+			<tr>
+				<th>
+					<label for="submit_css_classes">' .
+						__( 'CSS classes', 'gravityforms' ) . ' ' .
+						gform_tooltip( 'submit_button_css', '', true ) .
+					'</label>
+				</th>
+				<td>
+					<input type="text" value="' . esc_attr( rgar( $form, 'submit_css_classes' ) ) . '" name="submit_css_classes">
+				</td>
+			</tr>';
+		return $settings;
+	}
+
+	/**
+	 * Save custom Submit Button setting for CSS classes.
+	 *
+	 * @since    2.0.5
+	 */
+	public function save_custom_form_submit_button_classes_setting($form) {
+		$form['submit_css_classes'] = rgpost( 'submit_css_classes' );
+		return $form;
+	}
+
+
 }

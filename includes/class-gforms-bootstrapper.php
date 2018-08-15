@@ -161,6 +161,10 @@ class Gforms_Bootstrapper extends GFAddOn {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		
+		$this->loader->add_filter( 'gform_tooltips', $plugin_admin, 'add_tooltips' );
+		$this->loader->add_filter( 'gform_form_settings', $plugin_admin, 'custom_form_submit_button_classes_setting', 10, 2 );
+		$this->loader->add_filter( 'gform_pre_form_settings_save', $plugin_admin, 'save_custom_form_submit_button_classes_setting' );
 
 	}
 
