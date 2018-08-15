@@ -95,7 +95,7 @@ $inline-classes: inline, gf_list_inline, list-inline, form-check-inline;
 			display: flex;
 			flex-direction: row;
 			li {
-				flex: 0 0 #{percentage(100/$i)};
+				flex: 0 0 #{percentage(1/$i)};
 			}
 		}
 	}

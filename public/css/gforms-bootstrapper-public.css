@@ -2041,7 +2041,7 @@ input[type="button"].btn-block {
   flex-direction: row; }
   .gf_list_2col .gfield_checkbox li,
   .gf_list_2col .gfield_radio li {
-    flex: 0 0 5000%; }
+    flex: 0 0 50%; }
 
 .gf_list_3col .gfield_checkbox,
 .gf_list_3col .gfield_radio {
@@ -2049,7 +2049,7 @@ input[type="button"].btn-block {
   flex-direction: row; }
   .gf_list_3col .gfield_checkbox li,
   .gf_list_3col .gfield_radio li {
-    flex: 0 0 3333.33333%; }
+    flex: 0 0 33.33333%; }
 
 .gf_list_4col .gfield_checkbox,
 .gf_list_4col .gfield_radio {
@@ -2057,7 +2057,7 @@ input[type="button"].btn-block {
   flex-direction: row; }
   .gf_list_4col .gfield_checkbox li,
   .gf_list_4col .gfield_radio li {
-    flex: 0 0 2500%; }
+    flex: 0 0 25%; }
 
 .gf_list_5col .gfield_checkbox,
 .gf_list_5col .gfield_radio {
@@ -2065,7 +2065,7 @@ input[type="button"].btn-block {
   flex-direction: row; }
   .gf_list_5col .gfield_checkbox li,
   .gf_list_5col .gfield_radio li {
-    flex: 0 0 2000%; }
+    flex: 0 0 20%; }
 
 .gfield_error .ginput_container input[type="color"],
 .gfield_error .ginput_container input[type="date"],
