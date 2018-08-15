@@ -88,6 +88,19 @@ $inline-classes: inline, gf_list_inline, list-inline, form-check-inline;
 	}
 }
 
+@for $i from 2 through 5 {
+	.gf_list_#{$i}col {
+		.gfield_checkbox,
+		.gfield_radio {
+			display: flex;
+			flex-direction: row;
+			li {
+				flex: 0 0 #{percentage(100/$i)};
+			}
+		}
+	}
+}
+
 .gfield_error {
 	#{$form-control} {
 		border-color: $form-feedback-invalid-color;
@@ -104,3 +117,4 @@ $inline-classes: inline, gf_list_inline, list-inline, form-check-inline;
 	@extend .btn;
 	@extend .btn-primary;
 }
+

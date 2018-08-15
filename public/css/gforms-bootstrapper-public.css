@@ -2035,6 +2035,38 @@ input[type="button"].btn-block {
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+.gf_list_2col .gfield_checkbox,
+.gf_list_2col .gfield_radio {
+  display: flex;
+  flex-direction: row; }
+  .gf_list_2col .gfield_checkbox li,
+  .gf_list_2col .gfield_radio li {
+    flex: 0 0 5000%; }
+
+.gf_list_3col .gfield_checkbox,
+.gf_list_3col .gfield_radio {
+  display: flex;
+  flex-direction: row; }
+  .gf_list_3col .gfield_checkbox li,
+  .gf_list_3col .gfield_radio li {
+    flex: 0 0 3333.33333%; }
+
+.gf_list_4col .gfield_checkbox,
+.gf_list_4col .gfield_radio {
+  display: flex;
+  flex-direction: row; }
+  .gf_list_4col .gfield_checkbox li,
+  .gf_list_4col .gfield_radio li {
+    flex: 0 0 2500%; }
+
+.gf_list_5col .gfield_checkbox,
+.gf_list_5col .gfield_radio {
+  display: flex;
+  flex-direction: row; }
+  .gf_list_5col .gfield_checkbox li,
+  .gf_list_5col .gfield_radio li {
+    flex: 0 0 2000%; }
+
 .gfield_error .ginput_container input[type="color"],
 .gfield_error .ginput_container input[type="date"],
 .gfield_error .ginput_container input[type="datetime-local"],

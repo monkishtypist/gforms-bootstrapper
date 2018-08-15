@@ -124,7 +124,7 @@ class Gforms_Bootstrapper_Public {
 	 * @since    2.0.2
 	 */
 	public function custom_validation_message( $message, $form ) {
-		return '<div class="alert alert-warning alert-dismissible fade show">' . $message . '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+		return '<div class="alert alert-danger alert-dismissible fade show">' . $message . '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
 	}
 
 }
