@@ -36,5 +36,5 @@ See `changelog.md`
 
 == Upgrade Notice ==
 
-= 2.0.0 =
+= 2.0.5.1 =
 This is the latest stable version.

@@ -2038,7 +2038,8 @@ input[type="button"].btn-block {
 .gf_list_2col .gfield_checkbox,
 .gf_list_2col .gfield_radio {
   display: flex;
-  flex-direction: row; }
+  flex-direction: row;
+  flex-wrap: wrap; }
   .gf_list_2col .gfield_checkbox li,
   .gf_list_2col .gfield_radio li {
     flex: 0 0 50%; }
@@ -2046,7 +2047,8 @@ input[type="button"].btn-block {
 .gf_list_3col .gfield_checkbox,
 .gf_list_3col .gfield_radio {
   display: flex;
-  flex-direction: row; }
+  flex-direction: row;
+  flex-wrap: wrap; }
   .gf_list_3col .gfield_checkbox li,
   .gf_list_3col .gfield_radio li {
     flex: 0 0 33.33333%; }
@@ -2054,7 +2056,8 @@ input[type="button"].btn-block {
 .gf_list_4col .gfield_checkbox,
 .gf_list_4col .gfield_radio {
   display: flex;
-  flex-direction: row; }
+  flex-direction: row;
+  flex-wrap: wrap; }
   .gf_list_4col .gfield_checkbox li,
   .gf_list_4col .gfield_radio li {
     flex: 0 0 25%; }
@@ -2062,7 +2065,8 @@ input[type="button"].btn-block {
 .gf_list_5col .gfield_checkbox,
 .gf_list_5col .gfield_radio {
   display: flex;
-  flex-direction: row; }
+  flex-direction: row;
+  flex-wrap: wrap; }
   .gf_list_5col .gfield_checkbox li,
   .gf_list_5col .gfield_radio li {
     flex: 0 0 20%; }

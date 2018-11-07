@@ -94,6 +94,7 @@ $inline-classes: inline, gf_list_inline, list-inline, form-check-inline;
 		.gfield_radio {
 			display: flex;
 			flex-direction: row;
+			flex-wrap: wrap;
 			li {
 				flex: 0 0 #{percentage(1/$i)};
 			}

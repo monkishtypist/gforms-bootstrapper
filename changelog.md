@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.5.1] - 2018-08-15
+### Added
+- CSS flex-wrap cols
+
 ## [2.0.5] - 2018-08-15
 ### Added
 - CSS classes form setting for submit buttons
