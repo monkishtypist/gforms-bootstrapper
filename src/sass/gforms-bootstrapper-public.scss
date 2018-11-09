@@ -13,7 +13,7 @@
 }
 
 .gfield {
-	@extend .col-12;
+	@extend .col-12 !optional;
 }
 
 $form-control: ".ginput_container input[type=\"color\"],

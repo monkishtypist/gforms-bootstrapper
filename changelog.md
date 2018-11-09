@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [2.0.5.1] - 2018-08-15
+## [2.0.5.2] - 2018-11-08
+### Added
+- remove bootstrap grid from compile
+
+## [2.0.5.1] - 2018-11-07
 ### Added
 - CSS flex-wrap cols
 
