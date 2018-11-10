@@ -1,6 +1,6 @@
 {
   "name": "gforms-bootstrapper",
-  "version": "2.0.5.2",
+  "version": "2.0.5.3",
   "description": "Add Bootstrap CSS and classes to gravity forms.",
   "main": "gulpfile.js",
   "scripts": {

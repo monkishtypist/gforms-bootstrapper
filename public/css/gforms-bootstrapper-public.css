@@ -1447,6 +1447,15 @@ input[type="button"].btn-block {
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+.gform_fields {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  margin-right: -1rem;
+  margin-left: -1rem; }
+
 .gf_list_2col .gfield_checkbox,
 .gf_list_2col .gfield_radio {
   display: flex;

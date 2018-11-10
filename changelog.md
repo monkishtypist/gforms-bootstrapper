@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.5.3] - 2018-11-09
+### Added
+- row-based css styles for `ul.gform_fields`
+
 ## [2.0.5.2] - 2018-11-08
 ### Added
 - remove bootstrap grid from compile
