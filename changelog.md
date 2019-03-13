@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.6] - 2019-03-13
+### Updated
+- npm dependencies
+- new version format d.d.d
+
 ## [2.0.5.3] - 2018-11-09
 ### Added
 - row-based css styles for `ul.gform_fields`
@@ -61,7 +66,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Pre-release
 
 
-[Unreleased]: https://github.com/monkishtypist/gforms-bootstrapper/compare/v2.0.5...HEAD
+[Unreleased]: https://github.com/monkishtypist/gforms-bootstrapper/compare/v2.0.6...HEAD
+[2.0.6]: https://github.com/monkishtypist/gforms-bootstrapper/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/monkishtypist/gforms-bootstrapper/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/monkishtypist/gforms-bootstrapper/compare/v2.0.2...v2.0.4
 [2.0.2]: https://github.com/monkishtypist/gforms-bootstrapper/compare/v2.0.1...v2.0.2
