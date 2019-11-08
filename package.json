@@ -45,7 +45,7 @@
     "gulp-uglify": "^3.0.1",
     "gulp-watch": "^5.0.1",
     "hoek": "^5.0.3",
-    "jquery": "^3.0.0",
+    "jquery": "^3.4.0",
     "live-server": "^1.2.0",
     "lodash": "^4.17.11",
     "merge-stream": "^1.0.1",
